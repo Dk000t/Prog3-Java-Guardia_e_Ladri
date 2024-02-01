@@ -1,4 +1,3 @@
-import java.util.Scanner;
 public class Room {
     public char[][] matrice = {
             {'X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'},
@@ -17,6 +16,16 @@ public class Room {
             {' ',' ',' ',' ',' ',' ',' ','X',' ',' ',' ',' ',' ',' ',' ','X'},
             {'X',' ',' ',' ',' ',' ',' ','X',' ',' ',' ',' ',' ',' ',' ','X'},
             {'X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'}};
+
+    public void getRoom() {
+        for (int i = 0; i < maxRows; i++) {
+            for (int j = 0; j < maxColumns; j++) {
+                System.out.print(matrice[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 
     int maxRows = matrice.length;
     int maxColumns = matrice[0].length;
