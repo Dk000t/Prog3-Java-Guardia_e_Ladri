@@ -1,5 +1,5 @@
 public class Room {
-    public char[][] matrice = {
+    public char[][] matrix = {
             {'X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'},
             {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
             {'X',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
@@ -20,13 +20,13 @@ public class Room {
     public void getRoom() {
         for (int i = 0; i < maxRows; i++) {
             for (int j = 0; j < maxColumns; j++) {
-                System.out.print(matrice[i][j] + " ");
+                System.out.print(matrix[i][j] + " ");
             }
             System.out.println();
         }
         System.out.println();
     }
 
-    int maxRows = matrice.length;
-    int maxColumns = matrice[0].length;
+    int maxRows = matrix.length;
+    int maxColumns = matrix[0].length;
 }
