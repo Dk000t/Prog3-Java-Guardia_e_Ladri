@@ -1,17 +1,23 @@
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class Game extends JFrame {
-    private Thief thief;
+
     private Room room;
     private int playerX;
     private int playerY;
+    private boolean victoryAchieved = false;
 
     public Game(Room room) {
         this.room = room;
-        Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);        this.playerX = thief.get_X(room);
+        Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
+        this.playerX = thief.get_X(room);
         this.playerY = thief.get_Y(room);
 
         setTitle("Game");
@@ -37,9 +43,12 @@ public class Game extends JFrame {
     }
 
     private void handleKeyPress(KeyEvent e) {
+        if (victoryAchieved) {
+            return; // Se la vittoria è stata raggiunta, non permettere il movimento del personaggio
+        }
+
         int keyCode = e.getKeyCode();
 
-        // Verifica se il personaggio è nella prima riga prima di muoversi verso l'alto
         if (keyCode == KeyEvent.VK_UP && playerX > 0 && room.matrix[playerX - 1][playerY] != Color.BLACK) {
             playerX--;
         } else if (keyCode == KeyEvent.VK_DOWN && playerX < room.matrix.length - 1 && room.matrix[playerX + 1][playerY] != Color.BLACK) {
@@ -50,7 +59,15 @@ public class Game extends JFrame {
             playerY++;
         }
 
-        // Ridisegna il pannello di gioco dopo il movimento
+        // Controlla se il giocatore è sulla posizione di uscita
+        for (Point exitPoint : room.exit) {
+            if (exitPoint.x == playerX && exitPoint.y == playerY) {
+                victoryAchieved = true;
+                repaint();
+                break;
+            }
+        }
+
         repaint();
     }
 
@@ -60,6 +77,10 @@ public class Game extends JFrame {
             super.paintComponent(g);
             drawMatrix(g);
             drawPlayer(g);
+
+            if (victoryAchieved) {
+                drawVictoryMessage(g);
+            }
         }
 
         private void drawMatrix(Graphics g) {
@@ -77,9 +98,14 @@ public class Game extends JFrame {
 
         private void drawPlayer(Graphics g) {
             int cellSize = 20;
-            // Usa il carattere Unicode dell'emoji di una persona che corre
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83C\uDFC3", playerY * cellSize, (playerX + 1) * cellSize);
+        }
+
+        private void drawVictoryMessage(Graphics g) {
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 30));
+            g.drawString("Hai vinto!", 100, 100);
         }
     }
 }
