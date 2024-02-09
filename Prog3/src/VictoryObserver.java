@@ -1,13 +1,7 @@
-import java.util.Observable;
-import java.util.Observer;
-
-public class VictoryObserver implements Observer {
-
+class VictoryDisplay implements VictoryObserver {
     @Override
-    public void update(Observable o, Object arg) {
-        // Quando viene notificata la vittoria, esegui le azioni necessarie
+    public void notifyVictory() {
         System.out.println("Hai vinto!");
-        // Esempio: Puoi chiamare un metodo per salvare il punteggio o altro
-        Ranking.RankingSave("Nome", "Cognome", 100); // Esempio di salvataggio del punteggio
+        // Qui puoi implementare la logica per visualizzare il messaggio di vittoria nel pannello di gioco o fare altre azioni necessarie
     }
 }

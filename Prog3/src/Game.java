@@ -6,6 +6,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.util.ArrayList;
+import java.util.List;
+
+// Interfaccia Observer
+interface VictoryObserver {
+    void notifyVictory();
+}
 
 public class Game extends JFrame {
 
@@ -13,6 +20,7 @@ public class Game extends JFrame {
     private int playerX;
     private int playerY;
     private boolean victoryAchieved = false;
+    private List<VictoryObserver> victoryObservers = new ArrayList<>();
 
     public Game(Room room) {
         this.room = room;
@@ -44,7 +52,7 @@ public class Game extends JFrame {
 
     private void handleKeyPress(KeyEvent e) {
         if (victoryAchieved) {
-            return; // Se la vittoria è stata raggiunta, non permettere il movimento del personaggio
+            return;
         }
 
         int keyCode = e.getKeyCode();
@@ -59,16 +67,25 @@ public class Game extends JFrame {
             playerY++;
         }
 
-        // Controlla se il giocatore è sulla posizione di uscita
         for (Point exitPoint : room.exit) {
             if (exitPoint.x == playerX && exitPoint.y == playerY) {
                 victoryAchieved = true;
-                repaint();
+                notifyVictoryObservers();
                 break;
             }
         }
 
         repaint();
+    }
+
+    public void addObserver(VictoryObserver observer) {
+        victoryObservers.add(observer);
+    }
+
+    private void notifyVictoryObservers() {
+        for (VictoryObserver observer : victoryObservers) {
+            observer.notifyVictory();
+        }
     }
 
     private class GamePanel extends JPanel {
