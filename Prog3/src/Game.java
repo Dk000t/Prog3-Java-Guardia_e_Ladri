@@ -24,6 +24,7 @@ public class Game extends JFrame {
     private int guard_x, guard_y;
     private boolean victoryAchieved = false;
     private List<VictoryObserver> victoryObservers = new ArrayList<>();
+    private Timer timer;
 
     public Game(Room room) {
         Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
@@ -57,7 +58,7 @@ public class Game extends JFrame {
 
 
         // Timer per muovere la guardia periodicamente
-        Timer timer = new Timer(1000, new ActionListener() {
+        this.timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 moveGuard(guard);
@@ -65,7 +66,6 @@ public class Game extends JFrame {
             }
         });
         timer.start();
-
         setVisible(true);
     }
 
@@ -112,6 +112,7 @@ public class Game extends JFrame {
         for (VictoryObserver observer : victoryObservers) {
             observer.notifyVictory();
         }
+        this.timer.stop();
     }
 
     private class GamePanel extends JPanel {
