@@ -2,10 +2,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,19 +26,17 @@ public class Game extends JFrame {
     private List<VictoryObserver> victoryObservers = new ArrayList<>();
 
     public Game(Room room) {
-        this.room = room;
         Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
         Character guard = CharacterFactory.createCharacter(CharacterFactory.CharacterType.GUARD);
+        this.room = room;
         this.thief_x = thief.get_X(room);
         this.thief_y = thief.get_Y(room);
-        while(room.matrix[guard_x][guard_y] == Color.BLACK){
-            guard_x = guard.get_X(room);
-            guard_y = guard.get_Y(room);
-        }
+        this.guard_x = guard.get_X(room);
+        this.guard_y = guard.get_Y(room);
 
         setTitle("Game");
-        int hSize = 22;
-        int wSize = 21;
+        int hSize = 25;
+        int wSize = 23;
         int width = room.column * wSize;
         int height = room.row * hSize;
 
@@ -53,6 +54,26 @@ public class Game extends JFrame {
         });
         gamePanel.setFocusable(true);
         setVisible(true);
+
+
+        // Timer per muovere la guardia periodicamente
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveGuard(guard);
+                repaint();
+            }
+        });
+        timer.start();
+
+        setVisible(true);
+    }
+
+    private void moveGuard(Character guard) {
+        Strategy strategy = new Strategy();
+        int[] guardCoordinates = strategy.rand_move(room, guard);
+        guard_x = guardCoordinates[0];
+        guard_y = guardCoordinates[1];
     }
 
     private void handleKeyPress(KeyEvent e) {
@@ -107,10 +128,10 @@ public class Game extends JFrame {
         }
 
         private void drawMatrix(Graphics g) {
-            int cellSize = 20;
+            int cellSize = 21;
 
-            for (int i = 0; i < room.row; i++) {
-                for (int j = 0; j < room.matrix[i].length; j++) {
+            for (int i = 0; i <= room.row; i++) {
+                for (int j = 0; j <= room.column; j++) {
                     g.setColor(room.matrix[i][j]);
                     g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
                     g.setColor(Color.BLACK);
@@ -120,12 +141,13 @@ public class Game extends JFrame {
         }
 
         private void drawThief(Graphics g) {
-            int cellSize = 20;
+            int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83C\uDFC3", thief_y * cellSize, (thief_x + 1) * cellSize);
         }
+
         private void drawGuard(Graphics g) {
-            int cellSize = 20;
+            int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83D\uDEE1", guard_y * cellSize, (guard_x + 1) * cellSize);
         }

@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Random;
 // Interfaccia Character
 interface Character {
@@ -21,16 +22,18 @@ class Thief implements Character {
 
 // Classe Guard
 class Guard implements Character {
-    Random random = new Random();
+    private static Random random = new Random();
 
     @Override
     public int get_X(Room room) {
-        return random.nextInt(room.row);
+        int x = random.nextInt(room.row + 1);
+        return x;
     }
 
     @Override
     public int get_Y(Room room) {
-        return random.nextInt(room.column);
+        int y = random.nextInt(room.row + 1);
+        return y;
     }
 }
 
