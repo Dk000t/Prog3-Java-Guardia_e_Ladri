@@ -4,8 +4,9 @@ import java.util.Scanner;
 public class Ranking {
     private String name, surname;
     int points;
+    File file = new File("Ranking.txt");
     public Ranking() {
-        if (fileExists()){
+        if (file.exists() && file.length() != 0){
             System.out.println("Ranking:");
             RankingRead();
         }
