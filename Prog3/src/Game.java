@@ -165,11 +165,5 @@ public class Game extends JFrame {
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83D\uDEE1", guard_y * cellSize, (guard_x + 1) * cellSize);
         }
-
-        private void drawVictoryMessage(Graphics g) {
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 30));
-            g.drawString("Hai vinto!", 100, 100);
-        }
     }
 }
