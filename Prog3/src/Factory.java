@@ -1,40 +1,38 @@
 import java.awt.*;
 import java.util.Random;
+
 // Interfaccia Character
 interface Character {
-    int get_X(Room room);
-    int get_Y(Room room);
+    int[] get_Coordinate(Room room);
 }
 
 // Classe Thief
 class Thief implements Character {
 
     @Override
-    public int get_X(Room room) {
-        return room.row - 2;
+    public int[] get_Coordinate(Room room){
+        int x = room.row - 1;
+        int y = room.row -1;
+        return new int[]{x,y};
     }
 
-    @Override
-    public int get_Y(Room room) {
-        return room.column - 2;
-    }
 }
 
 // Classe Guard
 class Guard implements Character {
-    private static Random random = new Random();
 
     @Override
-    public int get_X(Room room) {
-        int x = random.nextInt(room.row + 1);
-        return x;
+    public int[] get_Coordinate(Room room){
+        int x,y;
+        Random random = new Random();
+        do{
+            x = random.nextInt();
+            y = random.nextInt();
+        }while (room.matrix[x][y] == Color.BLACK);
+
+        return new int[]{x,y};
     }
 
-    @Override
-    public int get_Y(Room room) {
-        int y = random.nextInt(room.row + 1);
-        return y;
-    }
 }
 
 // Factory Method

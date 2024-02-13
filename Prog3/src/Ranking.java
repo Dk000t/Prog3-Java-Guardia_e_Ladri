@@ -16,10 +16,6 @@ public class Ranking {
             System.out.println("Inserisci il tuo cognome:");
             this.surname = scanner.nextLine();
     }
-    private boolean fileExists() {
-        File file = new File("Ranking.txt");
-        return file.exists();
-    }
     public static void RankingRead() {
         try {
             FileReader fileReader = new FileReader("Ranking.txt");
@@ -42,8 +38,5 @@ public class Ranking {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    private void Set_Points(int points) {
-        this.points = points;
     }
 }

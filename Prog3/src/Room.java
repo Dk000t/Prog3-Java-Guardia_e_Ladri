@@ -20,7 +20,7 @@ public class Room extends JFrame {
             {Color.BLACK, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.BLACK, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.BLACK},
             {Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK}};
 
-    public int row = matrix.length -1;
-    public int column = matrix[0].length -1;
+    public int row = matrix.length - 1;
+    public int column = matrix[0].length - 1;
     public Point[] exit = {new Point(11, 0), new Point(12, 0), new Point(13, 0)};
 }
