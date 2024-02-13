@@ -21,6 +21,7 @@ public class Game extends JFrame {
     private boolean victoryAchieved = false;
     private List<Observer> victoryObservers = new ArrayList<>();
     private Timer timer;
+    private boolean gameOver = false;
     VictoryDisplay victory = new VictoryDisplay();
     DefeatDisplay defeat = new DefeatDisplay();
 
@@ -87,7 +88,7 @@ public class Game extends JFrame {
 
 
     private void handleKeyPress(KeyEvent e) {
-        if (victoryAchieved) {
+        if (victoryAchieved || gameOver) {
             return;
         }
 
@@ -136,6 +137,11 @@ public class Game extends JFrame {
 
             if (victoryAchieved) {
                 victory.notify(g);
+            }
+            else if (thief_x == guard_x && thief_y == guard_y) {
+                defeat.notify(g);
+                timer.stop();
+                gameOver = true;
             }
         }
 
