@@ -1,13 +1,17 @@
-import java.awt.*;
-public class Strategy {
-    public int[] rand_move(Room room, Character guard){
-        int x,y;
-        do{
-            x = guard.get_X(room);
-            y = guard.get_Y(room);
-        }while (room.matrix[x][y] == Color.BLACK && room.matrix[x][y] == room.matrix[room.row][room.column]);
+import java.util.Random;
 
-        int[] coordinates = {x,y};
-        return coordinates;
+public class Strategy {
+    public int[] rand_move(Room room, Character guard) {
+        int[] coordinate = new int[2];
+        Random random = new Random();
+        int rand = random.nextInt(10);
+
+        switch (rand) {
+            case 0,1,2:
+                coordinate = guard.get_Coordinate(room);
+                break;
+        }
+
+        return coordinate;
     }
 }

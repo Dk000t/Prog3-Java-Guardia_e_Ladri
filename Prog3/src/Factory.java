@@ -12,7 +12,7 @@ class Thief implements Character {
     @Override
     public int[] get_Coordinate(Room room){
         int x = room.row - 1;
-        int y = room.row -1;
+        int y = room.row - 1;
         return new int[]{x,y};
     }
 
@@ -26,8 +26,8 @@ class Guard implements Character {
         int x,y;
         Random random = new Random();
         do{
-            x = random.nextInt();
-            y = random.nextInt();
+            x = random.nextInt(room.row);
+            y = random.nextInt(room.column);
         }while (room.matrix[x][y] == Color.BLACK);
 
         return new int[]{x,y};

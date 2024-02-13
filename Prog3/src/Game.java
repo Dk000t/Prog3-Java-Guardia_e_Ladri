@@ -20,8 +20,8 @@ interface VictoryObserver {
 public class Game extends JFrame {
 
     private Room room;
-    private int thief_x, thief_y;
-    private int guard_x, guard_y;
+    private static int thief_x, thief_y;
+    private static int guard_x, guard_y;
     private boolean victoryAchieved = false;
     private List<VictoryObserver> victoryObservers = new ArrayList<>();
     private Timer timer;
@@ -29,11 +29,13 @@ public class Game extends JFrame {
     public Game(Room room) {
         Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
         Character guard = CharacterFactory.createCharacter(CharacterFactory.CharacterType.GUARD);
+        int[] thief_coordinate = thief.get_Coordinate(room);
+        int[] guard_coordinate = guard.get_Coordinate(room);
         this.room = room;
-        this.thief_x = thief.get_X(room);
-        this.thief_y = thief.get_Y(room);
-        this.guard_x = guard.get_X(room);
-        this.guard_y = guard.get_Y(room);
+        thief_x = thief_coordinate[0];
+        thief_y = thief_coordinate[1];
+        guard_x = guard_coordinate[0];
+        guard_y = guard_coordinate[1];
 
         setTitle("Game");
         int hSize = 25;
@@ -55,7 +57,6 @@ public class Game extends JFrame {
         });
         gamePanel.setFocusable(true);
         setVisible(true);
-
 
         // Timer per muovere la guardia periodicamente
         this.timer = new Timer(1000, new ActionListener() {
