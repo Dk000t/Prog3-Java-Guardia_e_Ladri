@@ -135,11 +135,7 @@ public class Game extends JFrame {
             drawGuard(g);
 
             if (victoryAchieved) {
-                victory.notify();
-            }
-            else if (thief_x == guard_x && thief_y == guard_y) {
-                defeat.notify(g);
-                timer.stop();
+                victory.notify(g);
             }
         }
 
