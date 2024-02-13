@@ -135,7 +135,11 @@ public class Game extends JFrame {
             drawGuard(g);
 
             if (victoryAchieved) {
-                drawVictoryMessage(g);
+                victory.notify();
+            }
+            else if (thief_x == guard_x && thief_y == guard_y) {
+                defeat.notify(g);
+                timer.stop();
             }
         }
 
@@ -162,12 +166,6 @@ public class Game extends JFrame {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83D\uDEE1", guard_y * cellSize, (guard_x + 1) * cellSize);
-        }
-
-        private void drawVictoryMessage(Graphics g) {
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 30));
-            g.drawString("Hai vinto!", 100, 100);
         }
     }
 }
