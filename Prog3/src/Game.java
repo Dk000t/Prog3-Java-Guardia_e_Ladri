@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 // Interfaccia Observer
 interface VictoryObserver {
@@ -23,7 +24,6 @@ public class Game extends JFrame {
     private static int thief_x, thief_y;
     private static int guard_x, guard_y;
     private boolean victoryAchieved = false;
-    private Strategy strategy = new Strategy();
     private List<VictoryObserver> victoryObservers = new ArrayList<>();
     private Timer timer;
 
@@ -61,9 +61,11 @@ public class Game extends JFrame {
 
         // Timer per muovere la guardia periodicamente
         this.timer = new Timer(1000, new ActionListener() {
+            Random random = new Random();
+            int rand = random.nextInt(10);
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] newGuardCoordinate = strategy.guard_move(room,guard);
+                int[] newGuardCoordinate = chosen_movement(room,guard);
                 guard_x = newGuardCoordinate[0];
                 guard_y = newGuardCoordinate[1];
                 repaint();
@@ -73,6 +75,19 @@ public class Game extends JFrame {
         timer.start();
         setVisible(true);
     }
+
+    public int[] chosen_movement(Room room, Character guard) {
+        Random random = new Random();
+        int rand = random.nextInt(10);
+        if (rand < 3) { // 30% dei casi
+            rand_move randMoveInstance = new rand_move();
+            return randMoveInstance.move(room, guard);
+        } else { // 70% dei casi
+            aco_move acoMoveInstance = new aco_move();
+            return acoMoveInstance.move(room, guard);
+        }
+    }
+
 
     private void handleKeyPress(KeyEvent e) {
         if (victoryAchieved) {
