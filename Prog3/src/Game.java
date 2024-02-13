@@ -23,6 +23,7 @@ public class Game extends JFrame {
     private static int thief_x, thief_y;
     private static int guard_x, guard_y;
     private boolean victoryAchieved = false;
+    private Strategy strategy = new Strategy();
     private List<VictoryObserver> victoryObservers = new ArrayList<>();
     private Timer timer;
 
@@ -62,19 +63,15 @@ public class Game extends JFrame {
         this.timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                moveGuard(guard);
+                int[] newGuardCoordinate = strategy.guard_move(room,guard);
+                guard_x = newGuardCoordinate[0];
+                guard_y = newGuardCoordinate[1];
                 repaint();
             }
+
         });
         timer.start();
         setVisible(true);
-    }
-
-    private void moveGuard(Character guard) {
-        Strategy strategy = new Strategy();
-        int[] guardCoordinates = strategy.rand_move(room, guard);
-        guard_x = guardCoordinates[0];
-        guard_y = guardCoordinates[1];
     }
 
     private void handleKeyPress(KeyEvent e) {
