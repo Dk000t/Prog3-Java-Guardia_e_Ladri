@@ -60,7 +60,7 @@ public class Game extends JFrame {
         setVisible(true);
 
         // Timer per muovere la guardia periodicamente
-        this.timer = new Timer(1000, new ActionListener() {
+        this.timer = new Timer(200, new ActionListener() {
             Random random = new Random();
             int rand = random.nextInt(10);
             @Override
@@ -120,10 +120,6 @@ public class Game extends JFrame {
         repaint();
     }
 
-    public int Point(){
-        return points;
-    }
-
     public void addObserver(Observer observer) {
         victoryObservers.add(observer);
     }
@@ -134,7 +130,6 @@ public class Game extends JFrame {
         }
         this.timer.stop();
     }
-
 
     private class GamePanel extends JPanel {
         @Override

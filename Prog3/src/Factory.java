@@ -25,11 +25,8 @@ class Guard implements Character {
     public int[] get_Coordinate(Room room){
         int x,y;
         Random random = new Random();
-        do{
-            x = random.nextInt(room.row);
-            y = random.nextInt(room.column);
-        }while (room.matrix[x][y] == Color.BLACK);
-
+        x = random.nextInt(room.row);
+        y = random.nextInt(room.column);
         return new int[]{x,y};
     }
 
