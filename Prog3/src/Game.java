@@ -22,8 +22,10 @@ public class Game extends JFrame {
     private List<Observer> victoryObservers = new ArrayList<>();
     private Timer timer;
     private boolean gameOver = false;
+    static int points;
     VictoryDisplay victory = new VictoryDisplay();
     DefeatDisplay defeat = new DefeatDisplay();
+    Ranking ranking = new Ranking();
 
     public Game(Room room) {
         Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
@@ -86,7 +88,6 @@ public class Game extends JFrame {
         }
     }
 
-
     private void handleKeyPress(KeyEvent e) {
         if (victoryAchieved || gameOver) {
             return;
@@ -96,23 +97,31 @@ public class Game extends JFrame {
 
         if (keyCode == KeyEvent.VK_UP && thief_x > 0 && room.matrix[thief_x - 1][thief_y] != Color.BLACK) {
             thief_x--;
+            points += 10; // Incremento del punteggio
         } else if (keyCode == KeyEvent.VK_DOWN && thief_x < room.matrix.length - 1 && room.matrix[thief_x + 1][thief_y] != Color.BLACK) {
             thief_x++;
+            points += 10; // Incremento del punteggio
         } else if (keyCode == KeyEvent.VK_LEFT && thief_y > 0 && room.matrix[thief_x][thief_y - 1] != Color.BLACK) {
             thief_y--;
+            points += 10; // Incremento del punteggio
         } else if (keyCode == KeyEvent.VK_RIGHT && thief_y < room.matrix[0].length - 1 && room.matrix[thief_x][thief_y + 1] != Color.BLACK) {
             thief_y++;
+            points += 10; // Incremento del punteggio
         }
 
         for (Point exitPoint : room.exit) {
             if (exitPoint.x == thief_x && exitPoint.y == thief_y) {
                 victoryAchieved = true;
                 notifyVictoryObservers();
+                ranking.RankingSave(points);
                 break;
             }
         }
-
         repaint();
+    }
+
+    public int Point(){
+        return points;
     }
 
     public void addObserver(Observer observer) {

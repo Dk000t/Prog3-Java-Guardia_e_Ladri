@@ -1,5 +1,7 @@
 public class Main {
     public static void main(String[] args) {
+        Ranking ranking = new Ranking();
+        ranking.RankingRead();
         Room room = new Room();
         Game game = new Game(room);
         Observer victoryObserver = new VictoryDisplay();
