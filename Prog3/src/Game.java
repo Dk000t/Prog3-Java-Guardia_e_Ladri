@@ -61,6 +61,7 @@ public class Game extends JFrame {
         });
         timer.start();
         setVisible(true);
+        setAlwaysOnTop(true);
     }
 
     public int[] chosen_movement(Room room, int[] current_pos) {
