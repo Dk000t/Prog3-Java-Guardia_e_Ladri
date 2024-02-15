@@ -12,12 +12,12 @@ import java.util.List;
 
 public class Game extends JFrame {
 
-    private Room room;
-    private static int thief_x, thief_y;
-    private static int guard_x, guard_y;
+    private final Room room;
+    private static int[] thief_coordinate;
+    private static int[] guard_coordinate;
     private boolean victoryAchieved = false;
-    private List<Observer> victoryObservers = new ArrayList<>();
-    private Timer timer;
+    private final List<Observer> victoryObservers = new ArrayList<>();
+    private final Timer timer;
     private boolean gameOver = false;
     static int points;
     VictoryDisplay victory = new VictoryDisplay();
@@ -25,17 +25,12 @@ public class Game extends JFrame {
     Ranking ranking = new Ranking();
 
     public Game(Room room) {
+
+        this.room = room;
         Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
         Character guard = CharacterFactory.createCharacter(CharacterFactory.CharacterType.GUARD);
-        int[] thief_coordinate = thief.get_Coordinate(room);
-        int[] guard_coordinate = guard.get_Coordinate(room);
-        int[] current_guard_coordinate = guard_coordinate;
-        this.room = room;
-        thief_x = thief_coordinate[0];
-        thief_y = thief_coordinate[1];
-        guard_x = guard_coordinate[0];
-        guard_y = guard_coordinate[1];
-
+        thief_coordinate = thief.get_Coordinate(room);
+        guard_coordinate = guard.get_Coordinate(room);
         setTitle("Game");
         int hSize = 25;
         int wSize = 23;
@@ -59,11 +54,9 @@ public class Game extends JFrame {
 
         // Timer per muovere la guardia periodicamente
         this.timer = new Timer(50, e -> {
-            int[] newGuardCoordinate = chosen_movement(room,current_guard_coordinate);
-            guard_x = newGuardCoordinate[0];
-            guard_y = newGuardCoordinate[1];
-            current_guard_coordinate[0] = guard_x;
-            current_guard_coordinate[1] = guard_y;
+            int[] newGuardCoordinate = chosen_movement(room, guard_coordinate);
+            guard_coordinate[0] = newGuardCoordinate[0];
+            guard_coordinate[1] = newGuardCoordinate[1];
             repaint();
         });
         timer.start();
@@ -82,22 +75,22 @@ public class Game extends JFrame {
 
         int keyCode = e.getKeyCode();
 
-        if (keyCode == KeyEvent.VK_UP && thief_x > 0 && room.matrix[thief_x - 1][thief_y] != Color.BLACK) {
-            thief_x--;
+        if (keyCode == KeyEvent.VK_UP && thief_coordinate[0] > 0 && room.matrix[thief_coordinate[0] - 1][thief_coordinate[1]] != Color.BLACK) {
+            thief_coordinate[0]--;
             points += 10; // Incremento del punteggio
-        } else if (keyCode == KeyEvent.VK_DOWN && thief_x < room.matrix.length - 1 && room.matrix[thief_x + 1][thief_y] != Color.BLACK) {
-            thief_x++;
+        } else if (keyCode == KeyEvent.VK_DOWN && thief_coordinate[0] < room.matrix.length - 1 && room.matrix[thief_coordinate[0] + 1][thief_coordinate[1]] != Color.BLACK) {
+            thief_coordinate[0]++;
             points += 10; // Incremento del punteggio
-        } else if (keyCode == KeyEvent.VK_LEFT && thief_y > 0 && room.matrix[thief_x][thief_y - 1] != Color.BLACK) {
-            thief_y--;
+        } else if (keyCode == KeyEvent.VK_LEFT && thief_coordinate[1] > 0 && room.matrix[thief_coordinate[0]][thief_coordinate[1] - 1] != Color.BLACK) {
+            thief_coordinate[1]--;
             points += 10; // Incremento del punteggio
-        } else if (keyCode == KeyEvent.VK_RIGHT && thief_y < room.matrix[0].length - 1 && room.matrix[thief_x][thief_y + 1] != Color.BLACK) {
-            thief_y++;
+        } else if (keyCode == KeyEvent.VK_RIGHT && thief_coordinate[1] < room.matrix[0].length - 1 && room.matrix[thief_coordinate[0]][thief_coordinate[1] + 1] != Color.BLACK) {
+            thief_coordinate[1]++;
             points += 10; // Incremento del punteggio
         }
 
         for (Point exitPoint : room.exit) {
-            if (exitPoint.x == thief_x && exitPoint.y == thief_y) {
+            if (exitPoint.x == thief_coordinate[0] && exitPoint.y == thief_coordinate[1]) {
                 victoryAchieved = true;
                 notifyVictoryObservers();
                 ranking.RankingSave(points);
@@ -129,7 +122,7 @@ public class Game extends JFrame {
             if (victoryAchieved) {
                 victory.notify(g);
             }
-            else if (thief_x == guard_x && thief_y == guard_y) {
+            else if (thief_coordinate[0] == guard_coordinate[0] && thief_coordinate[1] == guard_coordinate[1]) {
                 defeat.notify(g);
                 timer.stop();
                 gameOver = true;
@@ -152,13 +145,13 @@ public class Game extends JFrame {
         private void drawThief(Graphics g) {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
-            g.drawString("\uD83C\uDFC3", thief_y * cellSize, (thief_x + 1) * cellSize);
+            g.drawString("\uD83C\uDFC3", thief_coordinate[1] * cellSize, (thief_coordinate[0] + 1) * cellSize);
         }
 
         private void drawGuard(Graphics g) {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
-            g.drawString("\uD83D\uDEE1", guard_y * cellSize, (guard_x + 1) * cellSize);
+            g.drawString("\uD83D\uDEE1", guard_coordinate[1] * cellSize, (guard_coordinate[0] + 1) * cellSize);
         }
     }
 }
