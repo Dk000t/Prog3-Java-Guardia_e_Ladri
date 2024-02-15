@@ -80,7 +80,7 @@ public class Game extends JFrame {
 
     public int[] chosen_movement(Room room, Character guard, int[] current_pos) {
         rand_move randMoveInstance = new rand_move();
-        return randMoveInstance.move(room, guard,current_pos);
+        return randMoveInstance.move(room,current_pos);
     }
 
     private void handleKeyPress(KeyEvent e) {
