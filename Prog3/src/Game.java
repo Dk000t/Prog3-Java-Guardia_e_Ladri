@@ -32,6 +32,7 @@ public class Game extends JFrame {
         Character guard = CharacterFactory.createCharacter(CharacterFactory.CharacterType.GUARD);
         int[] thief_coordinate = thief.get_Coordinate(room);
         int[] guard_coordinate = guard.get_Coordinate(room);
+        int[] current_guard_coordinate = guard_coordinate;
         this.room = room;
         thief_x = thief_coordinate[0];
         thief_y = thief_coordinate[1];
@@ -65,26 +66,27 @@ public class Game extends JFrame {
             int rand = random.nextInt(10);
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] newGuardCoordinate = chosen_movement(room,guard);
+                int[] newGuardCoordinate = chosen_movement(room,guard,current_guard_coordinate);
                 guard_x = newGuardCoordinate[0];
                 guard_y = newGuardCoordinate[1];
+                current_guard_coordinate[0] = guard_x;
+                current_guard_coordinate[1] = guard_y;
                 repaint();
             }
-
         });
         timer.start();
         setVisible(true);
     }
 
-    public int[] chosen_movement(Room room, Character guard) {
+    public int[] chosen_movement(Room room, Character guard, int[] current_pos) {
         Random random = new Random();
         int rand = random.nextInt(10);
         if (rand < 3) { // 30% dei casi
             rand_move randMoveInstance = new rand_move();
-            return randMoveInstance.move(room, guard);
+            return randMoveInstance.move(room, guard,current_pos);
         } else { // 70% dei casi
             aco_move acoMoveInstance = new aco_move();
-            return acoMoveInstance.move(room, guard);
+            return acoMoveInstance.move(room, guard,current_pos);
         }
     }
 

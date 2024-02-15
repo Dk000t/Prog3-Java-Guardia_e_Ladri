@@ -1,6 +1,3 @@
-import java.awt.*;
-import java.util.Random;
-
 // Interfaccia Character
 interface Character {
     int[] get_Coordinate(Room room);
@@ -23,10 +20,8 @@ class Guard implements Character {
 
     @Override
     public int[] get_Coordinate(Room room){
-        int x,y;
-        Random random = new Random();
-        x = random.nextInt(room.row);
-        y = random.nextInt(room.column);
+        int x = 1;
+        int y = 1;
         return new int[]{x,y};
     }
 
