@@ -16,7 +16,16 @@ class rand_move implements Strategy {
     }
 
     private int[] rand_adjacent_8(Room room, int[] current_pos) {
-        final int[][] DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}};
+        final int[][] DIRECTIONS = {
+                {1, 0},   // Nord
+                {-1, 0},  // Sud
+                {0, -1},  // Ovest
+                {0, 1},   // Est
+                {1, 1},   // Nord-Est
+                {1, -1},  // Nord-Ovest
+                {-1, 1},  // Sud-Est
+                {-1, -1}  // Sud-Ovest
+        };
 
         Random random = new Random();
         int randIndex;
