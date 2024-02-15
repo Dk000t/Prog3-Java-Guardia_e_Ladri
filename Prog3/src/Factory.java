@@ -35,13 +35,9 @@ class CharacterFactory {
     }
 
     static Character createCharacter(CharacterType type) {
-        switch (type) {
-            case THIEF:
-                return new Thief();
-            case GUARD:
-                return new Guard();
-            default:
-                throw new IllegalArgumentException("Invalid character type");
-        }
+        return switch (type) {
+            case THIEF -> new Thief();
+            case GUARD -> new Guard();
+        };
     }
 }

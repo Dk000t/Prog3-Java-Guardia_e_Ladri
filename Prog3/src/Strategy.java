@@ -41,12 +41,3 @@ class rand_move implements Strategy {
         return rand_adjacent_8(room, current_pos);
     }
 }
-
-class aco_move implements Strategy{
-    @Override
-    public int[] move(Room room, int[] current_pos) {
-        current_pos[0] = 1;
-        current_pos[1] = 1;
-        return current_pos;
-    }
-}

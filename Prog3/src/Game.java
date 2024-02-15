@@ -32,6 +32,7 @@ public class Game extends JFrame {
 
     public Game(Room room) {
         this.room = room;
+        GamePanel gamePanel = new GamePanel(thief_coordinate, guard_coordinate);
         setTitle("Game");
         int hSize = 25;
         int wSize = 23;
@@ -47,7 +48,7 @@ public class Game extends JFrame {
         gamePanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                handleKeyPress(e);
+                handleKeyPress(e,thief_coordinate);
             }
         });
         gamePanel.setFocusable(true);
@@ -59,7 +60,7 @@ public class Game extends JFrame {
             int rand = random.nextInt(10);
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] newGuardCoordinate = chosen_movement(room,guard,current_guard_coordinate);
+                int[] newGuardCoordinate = chosen_movement(room,current_guard_coordinate);
                 guard_coordinate[0] = newGuardCoordinate[0];
                 guard_coordinate[1] = newGuardCoordinate[1];
                 current_guard_coordinate[0] = guard_coordinate[0];
@@ -71,18 +72,18 @@ public class Game extends JFrame {
         setVisible(true);
     }
 
-    public int[] chosen_movement(Room room, Character guard, int[] current_pos) {
+    public int[] chosen_movement(Room room, int[] current_pos) {
         rand_move randMoveInstance = new rand_move();
         return randMoveInstance.move(room,current_pos);
     }
-    private void handleKeyPress(KeyEvent e) {
+    private void handleKeyPress(KeyEvent e, int[] thief_coordinate) {
         if (victoryAchieved || gameOver) {
             return;
         }
         int keyCode = e.getKeyCode();
 
         // Utilizzare thief_coordinate
-        if (keyCode == KeyEvent.VK_UP && this.thief_coordinate[0] > 0 && room.matrix[thief_coordinate[0] - 1][thief_coordinate[1]] != Color.BLACK) {
+        if (keyCode == KeyEvent.VK_UP && thief_coordinate[0] > 0 && room.matrix[thief_coordinate[0] - 1][thief_coordinate[1]] != Color.BLACK) {
             thief_coordinate[0]--;
             points += 10; // Incremento del punteggio
         } else if (keyCode == KeyEvent.VK_DOWN && thief_coordinate[0] < room.matrix.length - 1 && room.matrix[thief_coordinate[0] + 1][thief_coordinate[1]] != Color.BLACK) {
@@ -121,6 +122,14 @@ public class Game extends JFrame {
     }
 
     private class GamePanel extends JPanel {
+        private int[] thief_coordinate;
+        private int[] guard_coordinate;
+
+        public GamePanel(int[] thief_coordinate, int[] guard_coordinate) {
+            this.thief_coordinate = thief_coordinate;
+            this.guard_coordinate = guard_coordinate;
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -151,13 +160,13 @@ public class Game extends JFrame {
             }
         }
 
-        private void drawThief(Graphics g) {
+        private void drawThief(Graphics g, int[] thief_coordinate) {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83C\uDFC3", thief_coordinate[1] * cellSize, (thief_coordinate[0] + 1) * cellSize);
         }
 
-        private void drawGuard(Graphics g) {
+        private void drawGuard(Graphics g, int[] guard_coordinate) {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83D\uDEE1", guard_coordinate[1] * cellSize, (guard_coordinate[0] + 1) * cellSize);
