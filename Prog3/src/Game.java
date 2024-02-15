@@ -61,7 +61,7 @@ public class Game extends JFrame {
         setVisible(true);
 
         // Timer per muovere la guardia periodicamente
-        this.timer = new Timer(200, new ActionListener() {
+        this.timer = new Timer(50, new ActionListener() {
             Random random = new Random();
             int rand = random.nextInt(10);
             @Override
