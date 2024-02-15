@@ -2,8 +2,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
@@ -11,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Game extends JFrame {
 
@@ -61,24 +58,19 @@ public class Game extends JFrame {
         setVisible(true);
 
         // Timer per muovere la guardia periodicamente
-        this.timer = new Timer(50, new ActionListener() {
-            Random random = new Random();
-            int rand = random.nextInt(10);
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int[] newGuardCoordinate = chosen_movement(room,guard,current_guard_coordinate);
-                guard_x = newGuardCoordinate[0];
-                guard_y = newGuardCoordinate[1];
-                current_guard_coordinate[0] = guard_x;
-                current_guard_coordinate[1] = guard_y;
-                repaint();
-            }
+        this.timer = new Timer(50, e -> {
+            int[] newGuardCoordinate = chosen_movement(room,current_guard_coordinate);
+            guard_x = newGuardCoordinate[0];
+            guard_y = newGuardCoordinate[1];
+            current_guard_coordinate[0] = guard_x;
+            current_guard_coordinate[1] = guard_y;
+            repaint();
         });
         timer.start();
         setVisible(true);
     }
 
-    public int[] chosen_movement(Room room, Character guard, int[] current_pos) {
+    public int[] chosen_movement(Room room, int[] current_pos) {
         rand_move randMoveInstance = new rand_move();
         return randMoveInstance.move(room,current_pos);
     }

@@ -54,7 +54,7 @@ public class Ranking {
             bufferedReader.close();
 
             // Ordina le tuple in base al valore di "points"
-            Collections.sort(tuples, Comparator.comparingInt(s -> Integer.parseInt(s.split(",")[2])));
+            tuples.sort(Comparator.comparingInt(s -> Integer.parseInt(s.split(",")[2])));
 
             // Sovrascrivi il file con le tuple ordinate
             FileWriter overwriteFileWriter = new FileWriter("Ranking.txt");
