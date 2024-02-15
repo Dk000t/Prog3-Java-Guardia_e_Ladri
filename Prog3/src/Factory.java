@@ -20,8 +20,8 @@ class Guard implements Character {
 
     @Override
     public int[] get_Coordinate(Room room){
-        int x = 1;
-        int y = 1;
+        int x = 7;
+        int y = 5;
         return new int[]{x,y};
     }
 

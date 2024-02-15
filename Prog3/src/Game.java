@@ -79,15 +79,8 @@ public class Game extends JFrame {
     }
 
     public int[] chosen_movement(Room room, Character guard, int[] current_pos) {
-        Random random = new Random();
-        int rand = random.nextInt(10);
-        if (rand < 3) { // 30% dei casi
-            rand_move randMoveInstance = new rand_move();
-            return randMoveInstance.move(room, guard,current_pos);
-        } else { // 70% dei casi
-            aco_move acoMoveInstance = new aco_move();
-            return acoMoveInstance.move(room, guard,current_pos);
-        }
+        rand_move randMoveInstance = new rand_move();
+        return randMoveInstance.move(room, guard,current_pos);
     }
 
     private void handleKeyPress(KeyEvent e) {
