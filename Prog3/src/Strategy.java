@@ -2,7 +2,7 @@ import java.awt.*;
 import java.util.Random;
 
 interface Strategy{
-    int[] move(Room room, int[] current_pos);
+    int[] move(int[] current_pos);
 }
 
 class rand_move implements Strategy {
@@ -15,7 +15,8 @@ class rand_move implements Strategy {
         return false;
     }
 
-    private int[] rand_adjacent_8(Room room, int[] current_pos) {
+    private int[] rand_adjacent_8(int[] current_pos) {
+        Room room = new Room();
         final int[][] DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}};
 
         Random random = new Random();
@@ -37,7 +38,16 @@ class rand_move implements Strategy {
     }
 
     @Override
-    public int[] move(Room room, int[] current_pos) {
-        return rand_adjacent_8(room, current_pos);
+    public int[] move(int[] current_pos) {
+        return rand_adjacent_8(current_pos);
+    }
+}
+
+class green_move implements Strategy{
+    @Override
+    public int[] move(int[] thief_pos) {
+        int x = thief_pos[0];
+        int y = thief_pos[1];
+        return new int[]{-x,-y};
     }
 }

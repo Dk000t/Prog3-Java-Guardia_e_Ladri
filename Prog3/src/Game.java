@@ -54,7 +54,7 @@ public class Game extends JFrame {
 
         // Timer per muovere la guardia periodicamente
         this.timer = new Timer(50, e -> {
-            int[] newGuardCoordinate = chosen_movement(room, guard_coordinate);
+            int[] newGuardCoordinate = chosen_movement(guard_coordinate);
             guard_coordinate[0] = newGuardCoordinate[0];
             guard_coordinate[1] = newGuardCoordinate[1];
             repaint();
@@ -64,9 +64,9 @@ public class Game extends JFrame {
         setAlwaysOnTop(true);
     }
 
-    public int[] chosen_movement(Room room, int[] current_pos) {
+    public int[] chosen_movement(int[] current_pos) {
         rand_move randMoveInstance = new rand_move();
-        return randMoveInstance.move(room,current_pos);
+        return randMoveInstance.move(current_pos);
     }
 
     private void handleKeyPress(KeyEvent e) {
