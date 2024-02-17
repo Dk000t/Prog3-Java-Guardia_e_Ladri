@@ -6,26 +6,28 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Timer;
 
 public class Game extends JFrame {
 
     private final Room room;
     private static int[] thief_coordinate;
     private static int[] guard_coordinate;
+    private static int[] thief_direction;
     private boolean victoryAchieved = false;
     private final List<Observer> victoryObservers = new ArrayList<>();
-    private final Timer timer;
     private boolean gameOver = false;
     static int points;
     VictoryDisplay victory = new VictoryDisplay();
     DefeatDisplay defeat = new DefeatDisplay();
     Ranking ranking = new Ranking();
+    private boolean isOnGreen = false;
+    private final Timer greenTimer;
 
     public Game(Room room) {
-
+        thief_direction = new int[2];
         this.room = room;
         Character thief = CharacterFactory.createCharacter(CharacterFactory.CharacterType.THIEF);
         Character guard = CharacterFactory.createCharacter(CharacterFactory.CharacterType.GUARD);
@@ -36,7 +38,6 @@ public class Game extends JFrame {
         int wSize = 23;
         int width = room.column * wSize;
         int height = room.row * hSize;
-
         setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -51,22 +52,14 @@ public class Game extends JFrame {
         });
         gamePanel.setFocusable(true);
         setVisible(true);
-
-        // Timer per muovere la guardia periodicamente
-        this.timer = new Timer(50, e -> {
-            int[] newGuardCoordinate = chosen_movement(guard_coordinate);
-            guard_coordinate[0] = newGuardCoordinate[0];
-            guard_coordinate[1] = newGuardCoordinate[1];
-            repaint();
-        });
-        timer.start();
         setVisible(true);
         setAlwaysOnTop(true);
-    }
 
-    public int[] chosen_movement(int[] current_pos) {
-        rand_move randMoveInstance = new rand_move();
-        return randMoveInstance.move(current_pos);
+        greenTimer = new Timer(10000, (e) -> {
+            isOnGreen = false;
+        });
+        greenTimer.setRepeats(false);
+        greenTimer.start();
     }
 
     private void handleKeyPress(KeyEvent e) {
@@ -75,30 +68,57 @@ public class Game extends JFrame {
         }
 
         int keyCode = e.getKeyCode();
+        boolean thiefMoved = false;
 
         if (keyCode == KeyEvent.VK_UP && thief_coordinate[0] > 0 && room.matrix[thief_coordinate[0] - 1][thief_coordinate[1]] != Color.BLACK) {
-            thief_coordinate[0]--;
-            points += 10; // Incremento del punteggio
+            thief_coordinate[0]--; //NORD
+            thief_direction = new int[]{-1, 0};
+            thiefMoved = true;
         } else if (keyCode == KeyEvent.VK_DOWN && thief_coordinate[0] < room.matrix.length - 1 && room.matrix[thief_coordinate[0] + 1][thief_coordinate[1]] != Color.BLACK) {
-            thief_coordinate[0]++;
-            points += 10; // Incremento del punteggio
+            thief_coordinate[0]++; //SUD
+            thief_direction = new int[]{1, 0};
+            thiefMoved = true;
         } else if (keyCode == KeyEvent.VK_LEFT && thief_coordinate[1] > 0 && room.matrix[thief_coordinate[0]][thief_coordinate[1] - 1] != Color.BLACK) {
-            thief_coordinate[1]--;
-            points += 10; // Incremento del punteggio
+            thief_coordinate[1]--; //OVEST
+            thief_direction = new int[]{0, -1};
+            thiefMoved = true;
         } else if (keyCode == KeyEvent.VK_RIGHT && thief_coordinate[1] < room.matrix[0].length - 1 && room.matrix[thief_coordinate[0]][thief_coordinate[1] + 1] != Color.BLACK) {
-            thief_coordinate[1]++;
-            points += 10; // Incremento del punteggio
+            thief_coordinate[1]++; //EST
+            thief_direction = new int[]{0, 1};
+            thiefMoved = true;
         }
 
-        for (Point exitPoint : room.exit) {
-            if (exitPoint.x == thief_coordinate[0] && exitPoint.y == thief_coordinate[1]) {
-                victoryAchieved = true;
-                notifyVictoryObservers();
-                ranking.RankingSave(points);
-                break;
+        if (thiefMoved) {
+            points += 10; // Incrementa i punti di 10
+
+            if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.GREEN) {
+                isOnGreen = true;
+                greenTimer.restart();
             }
+
+            if (isOnGreen) {
+                green_move greenMoveInstance = new green_move(guard_coordinate[0], guard_coordinate[1]);
+                int[] newGuardCoordinate = greenMoveInstance.move(thief_direction);
+                guard_coordinate[0] += newGuardCoordinate[0];
+                guard_coordinate[1] += newGuardCoordinate[1];
+            } else {
+                rand_move rand_move = new rand_move();
+                int[] newGuardCoordinate = rand_move.move(guard_coordinate);
+                guard_coordinate[0] = newGuardCoordinate[0];
+                guard_coordinate[1] = newGuardCoordinate[1];
+            }
+
+            for (Point exitPoint : room.exit) {
+                if (exitPoint.x == thief_coordinate[0] && exitPoint.y == thief_coordinate[1]) {
+                    victoryAchieved = true;
+                    notifyVictoryObservers();
+                    ranking.RankingSave(points);
+                    break;
+                }
+            }
+
+            repaint();
         }
-        repaint();
     }
 
     public void addObserver(Observer observer) {
@@ -109,7 +129,6 @@ public class Game extends JFrame {
         for (Observer observer : victoryObservers) {
             observer.notify(getGraphics()); // Passa il Graphics del pannello di gioco
         }
-        this.timer.stop();
     }
 
     private class GamePanel extends JPanel {
@@ -122,10 +141,8 @@ public class Game extends JFrame {
 
             if (victoryAchieved) {
                 victory.notify(g);
-            }
-            else if (thief_coordinate[0] == guard_coordinate[0] && thief_coordinate[1] == guard_coordinate[1]) {
+            } else if (thief_coordinate[0] == guard_coordinate[0] && thief_coordinate[1] == guard_coordinate[1]) {
                 defeat.notify(g);
-                timer.stop();
                 gameOver = true;
             }
         }

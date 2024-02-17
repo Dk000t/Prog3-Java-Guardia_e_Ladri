@@ -43,11 +43,36 @@ class rand_move implements Strategy {
     }
 }
 
-class green_move implements Strategy{
+class green_move implements Strategy {
+    private int guardX;
+    private int guardY;
+
+    public green_move(int guardX, int guardY) {
+        this.guardX = guardX;
+        this.guardY = guardY;
+    }
+
     @Override
-    public int[] move(int[] thief_pos) {
-        int x = thief_pos[0];
-        int y = thief_pos[1];
-        return new int[]{-x,-y};
+    public int[] move(int[] thief_direction) {
+        Room room = new Room();
+        int x = thief_direction[0];
+        int y = thief_direction[1];
+        int[] guard_movement = new int[]{-x, -y};
+
+        // Controllo se il movimento porta la guardia fuori dalla matrice
+        if (guardX + guard_movement[0] < 0 || guardX + guard_movement[0] >= room.row ||
+                guardY + guard_movement[1] < 0 || guardY + guard_movement[1] >= room.column) {
+            // Se il movimento porta la guardia fuori dalla matrice, mantienila ferma
+            return new int[]{0, 0};
+        }
+
+        // Controllo se il movimento porta la guardia sopra una casella nera
+        if (room.matrix[guardX + guard_movement[0]][guardY + guard_movement[1]] == Color.BLACK) {
+            // Se il movimento porta la guardia sopra una casella nera, mantienila ferma
+            return new int[]{0, 0};
+        }
+
+        return guard_movement;
     }
 }
+
