@@ -24,7 +24,9 @@ public class Game extends JFrame {
     DefeatDisplay defeat = new DefeatDisplay();
     Ranking ranking = new Ranking();
     private boolean isOnGreen = false;
+    private boolean isOnYellow = false;
     private final Timer greenTimer;
+    private final Timer yellowTimer;
 
     public Game(Room room) {
         thief_direction = new int[2];
@@ -55,11 +57,13 @@ public class Game extends JFrame {
         setVisible(true);
         setAlwaysOnTop(true);
 
-        greenTimer = new Timer(10000, (e) -> {
-            isOnGreen = false;
-        });
+        greenTimer = new Timer(10000, (e) -> isOnGreen = false);
         greenTimer.setRepeats(false);
         greenTimer.start();
+
+        yellowTimer = new Timer(10000,(e) -> isOnYellow = false);
+        yellowTimer.setRepeats(false);
+        yellowTimer.start();
     }
 
     private void handleKeyPress(KeyEvent e) {
@@ -93,7 +97,22 @@ public class Game extends JFrame {
 
             if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.GREEN) {
                 isOnGreen = true;
+                isOnYellow = false;
                 greenTimer.restart();
+                yellowTimer.stop();
+            }
+            else if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.YELLOW) {
+                isOnYellow = true;
+                isOnGreen = false;
+                yellowTimer.restart();
+                greenTimer.stop();
+            }
+
+            if (isOnYellow) {
+                rand_move rand_move = new rand_move();
+                int[] newGuardCoordinate = rand_move.move(guard_coordinate);
+                guard_coordinate[0] = newGuardCoordinate[0];
+                guard_coordinate[1] = newGuardCoordinate[1];
             }
 
             if (isOnGreen) {
@@ -101,11 +120,6 @@ public class Game extends JFrame {
                 int[] newGuardCoordinate = greenMoveInstance.move(thief_direction);
                 guard_coordinate[0] += newGuardCoordinate[0];
                 guard_coordinate[1] += newGuardCoordinate[1];
-            } else {
-                rand_move rand_move = new rand_move();
-                int[] newGuardCoordinate = rand_move.move(guard_coordinate);
-                guard_coordinate[0] = newGuardCoordinate[0];
-                guard_coordinate[1] = newGuardCoordinate[1];
             }
 
             for (Point exitPoint : room.exit) {

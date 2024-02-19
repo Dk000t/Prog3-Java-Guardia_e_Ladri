@@ -44,8 +44,8 @@ class rand_move implements Strategy {
 }
 
 class green_move implements Strategy {
-    private int guardX;
-    private int guardY;
+    private final int guardX;
+    private final int guardY;
 
     public green_move(int guardX, int guardY) {
         this.guardX = guardX;
