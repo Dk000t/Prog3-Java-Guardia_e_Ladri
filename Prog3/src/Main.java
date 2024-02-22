@@ -3,6 +3,7 @@ public class Main {
         Ranking ranking = new Ranking();
         ranking.RankingRead();
         Room room = new Room();
+        room.fillMatrix();
         Game game = new Game(room);
         Observer victoryObserver = new VictoryDisplay();
         game.addObserver(victoryObserver);

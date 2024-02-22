@@ -26,6 +26,7 @@ public class Game extends JFrame {
     Ranking ranking = new Ranking();
     private boolean isOnGreen = false;
     private boolean isOnYellow = false;
+    private boolean isOnRed = false;
     private final Timer greenTimer;
     private final Timer yellowTimer;
     Random rand = new Random();
@@ -101,14 +102,23 @@ public class Game extends JFrame {
             if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.GREEN) {
                 isOnGreen = true;
                 isOnYellow = false;
+                isOnRed = false;
                 greenTimer.restart();
                 yellowTimer.stop();
             }
             else if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.YELLOW) {
                 isOnYellow = true;
                 isOnGreen = false;
+                isOnRed = false;
                 yellowTimer.restart();
                 greenTimer.stop();
+            }
+            else if(room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.RED) {
+                isOnRed = true;
+                isOnGreen = false;
+                isOnYellow = false;
+                greenTimer.stop();
+                yellowTimer.stop();
             }
 
             if (isOnYellow) {
@@ -124,7 +134,16 @@ public class Game extends JFrame {
                 guard_coordinate[0] += newGuardCoordinate[0];
                 guard_coordinate[1] += newGuardCoordinate[1];
             }
-            if(!(isOnGreen) && !(isOnYellow)){
+
+            if (isOnRed) {
+                aco_move acoMoveInstance = new aco_move(room);
+                acoMoveInstance.setThief(thief_coordinate);
+                int[] newGuardCoordinate = acoMoveInstance.move(guard_coordinate);
+                guard_coordinate[0] = newGuardCoordinate[0];
+                guard_coordinate[1] = newGuardCoordinate[1];
+            }
+
+            if(!(isOnRed) && !(isOnGreen) && !(isOnYellow)){
                 switch (rand.nextInt(10)){
                     case 0,1,2: {
                         green_move greenMoveInstance = new green_move(guard_coordinate[0], guard_coordinate[1]);
