@@ -76,3 +76,159 @@ class green_move implements Strategy {
     }
 }
 
+class aco_move implements Strategy {
+    Room room = new Room();
+    private final double PHEROMONE_DROP = 1;
+    private final double PHEROMONE_INIT = 0.5;
+    private final double EVAPORATION_RATE = 0.1;
+    private static final double ALPHA = 1.0; // Importanza dei feromoni
+    private static final double BETA = 2.0;  // Importanza della visibilità
+    private final double[][] PHEROMONES_MATRIX;
+    private final int ANTS = room.row * room.column;
+    Point[] ants = new Point[ANTS];
+    final int[][] ANTS_DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}};
+    private Point thief;
+    private Point guard;
+    Random rand = new Random();
+
+    Point[] exit = new Point[]{
+            room.exit[0],
+            room.exit[1],
+            room.exit[2]
+    };
+
+    public aco_move(Room room){
+        PHEROMONES_MATRIX = new double[room.row][room.column];
+        init_pheromones();
+        init_ants();
+    }
+
+    // Vengono inizializzati i feromoni in tutta la matrice.
+    private void init_pheromones(){
+        for (int i = 0; i < room.row; i++) {
+            for (int j = 0; j < room.column; j++) {
+                PHEROMONES_MATRIX[i][j] = PHEROMONE_INIT;
+            }
+        }
+    }
+
+    // Inizializzo le formiche in una posizione casuale.
+    private void init_ants(){
+        for(int i = 0; i < ANTS; i++) {
+            ants[i] = new Point();
+            do {
+                ants[i].setLocation(rand.nextInt(room.row),rand.nextInt(room.column));
+            }
+            while (!is_valid(ants[i]));
+        }
+    }
+
+    // Le formiche inizializzate vengono fatte muovere nelle 8 caselle adiacenti.
+    private void ants_move() {
+        Point point = new Point();
+        for (int i = 0; i < ANTS; i++) {
+            do {
+                int[] direction = ANTS_DIRECTIONS[rand.nextInt(8)];
+                point.setLocation(direction[0] + ants[i].x,direction[1] + ants[i].y);
+            } while (!is_valid(point));
+
+            ants[i].setLocation(point.x, point.y);
+
+            if (ants[i].equals(thief)) {
+                drop_pheromones(ants[i]);
+                go_to_colony(ants[i]);
+                break;
+            }
+        }
+    }
+
+    // Viene controllata la validità delle coordinate generate casualmente o assegnate in base alla direzione scelta.
+    private boolean is_valid(Point point){
+        if(point.x >= 0 && point.x < room.row && point.y >= 0 && point.y < room.column && room.matrix[point.x][point.y] != Color.BLACK)
+            return true;
+        else
+            return false;
+    }
+
+    // Vengono rilasciati i feromoni quando viene trovato del "cibo",
+    private void drop_pheromones(Point ant){
+        PHEROMONES_MATRIX[ant.x][ant.y] += PHEROMONE_DROP;
+    }
+
+    // I feromoni evaporano man mano che le formice si muovono.
+    private void pheromones_evaporation(){
+        for (int i = 0; i < room.row; i++)
+            for (int j = 0; j < room.column; j++){
+                PHEROMONES_MATRIX[i][j] *= (1 - EVAPORATION_RATE);
+            }
+    }
+
+    // Una volta che il cibo è stato trovato la formica torna alla colonia rilasciando feromone dal cibo alla colonia.
+    private void go_to_colony(Point ant) {
+        Point newLocation;
+
+        while(!(ant.equals(exit[0]) || ant.equals(exit[1]) || ant.equals(exit[2]))){
+            do {
+                int[] dir = ANTS_DIRECTIONS[rand.nextInt(8)];
+                newLocation = new Point(ant.x + dir[0], ant.y + dir[1]);
+            } while (!is_valid(newLocation));
+
+            ant.setLocation(newLocation);
+            pheromones_evaporation();
+            drop_pheromones(ant);
+        }
+    }
+
+
+    // Una volta che le formiche sono tornate alla colonia la guardia decide le sue coordinate in base alle informazioni del feromone presente.
+    private Point guard_next_move() {
+        Point[] adjacent_cells = new Point[]{
+                new Point(guard.x - 1, guard.y),   // Sinistra
+                new Point(guard.x + 1, guard.y),   // Destra
+                new Point(guard.x, guard.y - 1),   // Sopra
+                new Point(guard.x, guard.y + 1),   // Sotto
+                new Point(guard.x - 1, guard.y - 1), // Diagonale in alto a sinistra
+                new Point(guard.x + 1, guard.y - 1), // Diagonale in alto a destra
+                new Point(guard.x - 1, guard.y + 1), // Diagonale in basso a sinistra
+                new Point(guard.x + 1, guard.y + 1)  // Diagonale in basso a destra
+        };
+
+        Point best_move = null;
+        double highest_score = Double.NEGATIVE_INFINITY;
+
+        for (Point adjacent_cell : adjacent_cells) {
+            if (is_valid(adjacent_cell)) {
+                double pheromone_level = PHEROMONES_MATRIX[adjacent_cell.x][adjacent_cell.y];
+                double proximity_score = 1.0 / (1.0 + distance(guard, adjacent_cell));
+                double score = Math.pow(pheromone_level, ALPHA) * Math.pow(proximity_score, BETA);
+                if (score > highest_score || best_move == null) {
+                    highest_score = score;
+                    best_move = adjacent_cell;
+                }
+            }
+        }
+
+        return best_move;
+    }
+
+    // Calcola la distanza euclidea tra due punti
+    private double distance(Point a, Point b) {
+        return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+    }
+
+    // Passa la posizione del ladro.
+    public void setThief(int[] thief_pos){
+        this.thief = new Point(thief_pos[0],thief_pos[1]);
+    }
+
+    @Override
+    public int[] move(int[] guard_pos) {
+        this.guard = new Point();
+        this.guard.x = guard_pos[0];
+        this.guard.y = guard_pos[1];
+        ants_move();
+        Point next_direction = guard_next_move();
+        return new int[] {next_direction.x, next_direction.y};
+    }
+}
+

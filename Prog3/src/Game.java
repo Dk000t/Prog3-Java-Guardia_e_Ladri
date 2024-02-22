@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.Timer;
 
 public class Game extends JFrame {
@@ -27,6 +28,8 @@ public class Game extends JFrame {
     private boolean isOnYellow = false;
     private final Timer greenTimer;
     private final Timer yellowTimer;
+    Random rand = new Random();
+
 
     public Game(Room room) {
         thief_direction = new int[2];
@@ -120,6 +123,23 @@ public class Game extends JFrame {
                 int[] newGuardCoordinate = greenMoveInstance.move(thief_direction);
                 guard_coordinate[0] += newGuardCoordinate[0];
                 guard_coordinate[1] += newGuardCoordinate[1];
+            }
+            if(!(isOnGreen) && !(isOnYellow)){
+                switch (rand.nextInt(10)){
+                    case 0,1,2: {
+                        green_move greenMoveInstance = new green_move(guard_coordinate[0], guard_coordinate[1]);
+                        int[] newGuardCoordinate = greenMoveInstance.move(thief_direction);
+                        guard_coordinate[0] += newGuardCoordinate[0];
+                        guard_coordinate[1] += newGuardCoordinate[1];
+                    }
+                    case 3,4,5,6,7,8,9: {
+                        aco_move acoMoveInstance = new aco_move(room);
+                        acoMoveInstance.setThief(thief_coordinate);
+                        int[] newGuardCoordinate = acoMoveInstance.move(guard_coordinate);
+                        guard_coordinate[0] = newGuardCoordinate[0];
+                        guard_coordinate[1] = newGuardCoordinate[1];
+                    }
+                }
             }
 
             for (Point exitPoint : room.exit) {
