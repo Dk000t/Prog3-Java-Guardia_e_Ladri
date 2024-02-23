@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 interface Strategy{
@@ -78,12 +80,12 @@ class green_move implements Strategy {
 
 class aco_move implements Strategy {
     Room room = new Room();
-    private final double PHEROMONE_DROP = 1;
-    private final double PHEROMONE_INIT = 0.5;
-    private final double EVAPORATION_RATE = 0.1;
-    private static final double ALPHA = 1.0; // Importanza dei feromoni
+    private final double PHEROMONE_DROP = 5.0;
+    private final double PHEROMONE_INIT = 2.0;
+    private final double EVAPORATION_RATE = 0.5;
+    private static final double ALPHA = 3.0; // Importanza dei feromoni
     private static final double BETA = 2.0;  // Importanza della visibilità
-    private final double[][] PHEROMONES_MATRIX;
+    private final double[][] PHEROMONES_MATRIX = new double[room.row][room.column];
     private final int ANTS = room.row * room.column;
     Point[] ants = new Point[ANTS];
     final int[][] ANTS_DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}};
@@ -91,14 +93,7 @@ class aco_move implements Strategy {
     private Point guard;
     Random rand = new Random();
 
-    Point[] exit = new Point[]{
-            room.exit[0],
-            room.exit[1],
-            room.exit[2]
-    };
-
-    public aco_move(Room room){
-        PHEROMONES_MATRIX = new double[room.row][room.column];
+    public aco_move(){
         init_pheromones();
         init_ants();
     }
@@ -125,22 +120,28 @@ class aco_move implements Strategy {
 
     // Le formiche inizializzate vengono fatte muovere nelle 8 caselle adiacenti.
     private void ants_move() {
-        Point point = new Point();
-        for (int i = 0; i < ANTS; i++) {
-            do {
-                int[] direction = ANTS_DIRECTIONS[rand.nextInt(8)];
-                point.setLocation(direction[0] + ants[i].x,direction[1] + ants[i].y);
-            } while (!is_valid(point));
+        boolean thiefFound = false;
 
-            ants[i].setLocation(point.x, point.y);
+        while (!thiefFound) {
+            for (int i = 0; i < ANTS; i++) {
+                Point point = new Point(ants[i]); // Copia il punto della formica
+                do {
+                    int[] direction = ANTS_DIRECTIONS[rand.nextInt(8)];
+                    point.setLocation(direction[0] + ants[i].x, direction[1] + ants[i].y);
+                } while (!is_valid(point));
 
-            if (ants[i].equals(thief)) {
-                drop_pheromones(ants[i]);
-                go_to_colony(ants[i]);
-                break;
+                ants[i].setLocation(point.x, point.y);
+
+                if (ants[i].equals(thief)) {
+                    drop_pheromones(ants[i]);
+                    go_to_colony(ants[i]);
+                    thiefFound = true; // Imposta il flag per indicare che il ladro è stato trovato
+                    break; // Esci dal ciclo for quando il ladro è stato trovato
+                }
             }
         }
     }
+
 
     // Viene controllata la validità delle coordinate generate casualmente o assegnate in base alla direzione scelta.
     private boolean is_valid(Point point){
@@ -167,18 +168,17 @@ class aco_move implements Strategy {
     private void go_to_colony(Point ant) {
         Point newLocation;
 
-        while(!(ant.equals(exit[0]) || ant.equals(exit[1]) || ant.equals(exit[2]))){
+        while(!(ant.equals(guard))){
             do {
                 int[] dir = ANTS_DIRECTIONS[rand.nextInt(8)];
                 newLocation = new Point(ant.x + dir[0], ant.y + dir[1]);
             } while (!is_valid(newLocation));
 
             ant.setLocation(newLocation);
-            pheromones_evaporation();
             drop_pheromones(ant);
+            pheromones_evaporation();
         }
     }
-
 
     // Una volta che le formiche sono tornate alla colonia la guardia decide le sue coordinate in base alle informazioni del feromone presente.
     private Point guard_next_move() {
@@ -223,12 +223,9 @@ class aco_move implements Strategy {
 
     @Override
     public int[] move(int[] guard_pos) {
-        this.guard = new Point();
-        this.guard.x = guard_pos[0];
-        this.guard.y = guard_pos[1];
+        this.guard = new Point(guard_pos[0],guard_pos[1]);
         ants_move();
         Point next_direction = guard_next_move();
         return new int[] {next_direction.x, next_direction.y};
     }
 }
-

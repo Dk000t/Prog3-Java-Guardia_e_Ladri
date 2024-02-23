@@ -136,7 +136,7 @@ public class Game extends JFrame {
             }
 
             if (isOnRed) {
-                aco_move acoMoveInstance = new aco_move(room);
+                aco_move acoMoveInstance = new aco_move();
                 acoMoveInstance.setThief(thief_coordinate);
                 int[] newGuardCoordinate = acoMoveInstance.move(guard_coordinate);
                 guard_coordinate[0] = newGuardCoordinate[0];
@@ -152,7 +152,7 @@ public class Game extends JFrame {
                         guard_coordinate[1] += newGuardCoordinate[1];
                     }
                     case 3,4,5,6,7,8,9: {
-                        aco_move acoMoveInstance = new aco_move(room);
+                        aco_move acoMoveInstance = new aco_move();
                         acoMoveInstance.setThief(thief_coordinate);
                         int[] newGuardCoordinate = acoMoveInstance.move(guard_coordinate);
                         guard_coordinate[0] = newGuardCoordinate[0];

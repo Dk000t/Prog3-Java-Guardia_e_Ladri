@@ -7,7 +7,7 @@ interface Observer {
 class VictoryDisplay implements Observer {
     @Override
     public void notify(Graphics g) {
-        g.setColor(Color.BLUE);
+        g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 30));
         g.drawString("Hai vinto!", 100, 150);
     }
@@ -16,7 +16,7 @@ class VictoryDisplay implements Observer {
 class DefeatDisplay implements Observer{
     @Override
     public void notify(Graphics g) {
-        g.setColor(Color.RED);
+        g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 30));
         g.drawString("Hai perso!", 100, 150);
     }
