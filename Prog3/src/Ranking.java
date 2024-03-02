@@ -41,7 +41,9 @@ public class Ranking {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void setPlayer_info(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nInserisci il tuo nome:");
         name = scanner.nextLine();

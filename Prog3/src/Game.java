@@ -208,6 +208,8 @@ public class Game extends JFrame {
 
             if (victoryAchieved) {
                 victory.notify(g);
+                ranking.RankingRead();
+
             } else if (thief_coordinate[0] == guard_coordinate[0] && thief_coordinate[1] == guard_coordinate[1]) {
                 defeat.notify(g);
                 gameOver = true;
