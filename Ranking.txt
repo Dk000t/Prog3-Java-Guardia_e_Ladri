@@ -1,4 +1,9 @@
+Lele,Blade,320
 d,d,340
 elele,lele,340
 Ciccio,Caputo,380
 d,d,390
+Francesco,Porritiello,390
+Fra,p,410
+d,d,1680
+d,d,2180

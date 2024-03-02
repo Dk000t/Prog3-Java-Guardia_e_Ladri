@@ -86,8 +86,8 @@ class aco_move implements Strategy {
     private static final double ALPHA = 5.0; // Importanza dei feromoni
     private static final double BETA = 1.0;  // Importanza della visibilità
     private final double[][] PHEROMONES_MATRIX = new double[room.row][room.column];
-    private final int ANTS = room.row * room.column;
-    private final int ANTS_ITERATION = 100;
+    private final int ANTS = (room.row * room.column)/2;
+    private final int ANTS_ITERATION = 20;
     Point[] ants = new Point[ANTS];
     final int[][] ANTS_DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}};
     private Point thief;
