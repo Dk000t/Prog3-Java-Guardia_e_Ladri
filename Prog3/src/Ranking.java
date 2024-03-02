@@ -17,13 +17,26 @@ public class Ranking {
 
             if (file.length() != 0) {
                 System.out.println("\nRanking:\n");
+                List<String> tuples = new ArrayList<>();
                 FileReader fileReader = new FileReader("Ranking.txt");
                 BufferedReader bufferedReader = new BufferedReader(fileReader);
                 String riga;
                 while ((riga = bufferedReader.readLine()) != null) {
-                    System.out.println(riga);
+                    tuples.add(riga);
                 }
                 bufferedReader.close();
+
+                // Ordina le tuple in base al valore di "points" in ordine decrescente
+                tuples.sort(Comparator.comparingInt(s -> Integer.parseInt(s.split(",")[2])));
+                Collections.reverse(tuples);
+
+                // Stampare l'elenco numerato
+                int position = 1;
+                for (String tuple : tuples) {
+                    String[] parts = tuple.split(",");
+                    System.out.println(position + ". " + parts[0] + " " + parts[1] + " - " + parts[2] + " points");
+                    position++;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
