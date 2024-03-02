@@ -17,8 +17,3 @@ Inoltre, nella stanza ci sono oggetti di diversi colori a disposizione del ladro
     rosso - la guardia va nella direzione dell’uscita (ottimizzazione ant colony).
 
 Scrivere un programma per la gestione del gioco che permette di visualizzare, ad ogni inizio e fine partita, la classifica dei risultati migliori ottenuti, da tutti i giocatori, in tutte le partite (minore numero di passi per raggiungere l’uscita).
-
-L’algoritmo di Ant Colony Optimization è un algoritmo del tipo Swarm Intelligence. L’algoritmo fu introdotto per la prima volta nel 1992 da Marco Dorigo del Politecnico di Milano. Esso viene utilizzato per la risoluzione di problemi computazionali complessi. L’idea di base di questo algoritmo prende spunto dall’organizzazione di una colonia di formiche, si usa infatti un meccanismo di feedback positivo come una sorta di feromone virtuale, per rafforzare quelle parti di soluzione che contribuiscono alla risoluzione del problema. Per evitare invece la convergenza verso opzioni non idonee, viene utilizzato un meccanismo di feedback negativo (ad esempio l’evaporizzazione del feromone virtuale) che introduce una componente temporale nell’algoritmo. Il punto di forza dell’algoritmo consiste quindi nella creazione di un sistema intelligente distribuito.
-
-Per i dettagli di sviluppo vedere: http://www.scholarpedia.org/article/Ant_colony_optimization.
-
