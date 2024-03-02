@@ -27,6 +27,7 @@ public class Game extends JFrame {
     private boolean isOnGreen = false;
     private boolean isOnYellow = false;
     private boolean isOnRed = false;
+    private boolean isOnWhite = false;
     private final Timer greenTimer;
     private final Timer yellowTimer;
     Random rand = new Random();
@@ -103,6 +104,7 @@ public class Game extends JFrame {
                 isOnGreen = true;
                 isOnYellow = false;
                 isOnRed = false;
+                isOnWhite = false;
                 greenTimer.restart();
                 yellowTimer.stop();
             }
@@ -110,6 +112,7 @@ public class Game extends JFrame {
                 isOnYellow = true;
                 isOnGreen = false;
                 isOnRed = false;
+                isOnWhite = false;
                 yellowTimer.restart();
                 greenTimer.stop();
             }
@@ -117,6 +120,15 @@ public class Game extends JFrame {
                 isOnRed = true;
                 isOnGreen = false;
                 isOnYellow = false;
+                isOnWhite = false;
+                greenTimer.stop();
+                yellowTimer.stop();
+            }
+            else if(room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.WHITE) {
+                isOnWhite = true;
+                isOnGreen = false;
+                isOnYellow = false;
+                isOnRed = false;
                 greenTimer.stop();
                 yellowTimer.stop();
             }
@@ -137,13 +149,14 @@ public class Game extends JFrame {
 
             if (isOnRed) {
                 aco_move acoMoveInstance = new aco_move();
+                acoMoveInstance.setBehavior(true);
                 acoMoveInstance.setThief(thief_coordinate);
                 int[] newGuardCoordinate = acoMoveInstance.move(guard_coordinate);
                 guard_coordinate[0] = newGuardCoordinate[0];
                 guard_coordinate[1] = newGuardCoordinate[1];
             }
 
-            if(!(isOnRed) && !(isOnGreen) && !(isOnYellow)){
+            if(isOnWhite){
                 switch (rand.nextInt(10)){
                     case 0,1,2: {
                         green_move greenMoveInstance = new green_move(guard_coordinate[0], guard_coordinate[1]);
@@ -153,6 +166,7 @@ public class Game extends JFrame {
                     }
                     case 3,4,5,6,7,8,9: {
                         aco_move acoMoveInstance = new aco_move();
+                        acoMoveInstance.setBehavior(false);
                         acoMoveInstance.setThief(thief_coordinate);
                         int[] newGuardCoordinate = acoMoveInstance.move(guard_coordinate);
                         guard_coordinate[0] = newGuardCoordinate[0];
