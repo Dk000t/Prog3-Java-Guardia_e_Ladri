@@ -27,9 +27,9 @@ public class Room extends JFrame {
 
     public void fillMatrix() {
         int totalCells = matrix.length * matrix[0].length;
-        int greenCells = totalCells / 4; // 25% delle celle totali
-        int redCells = totalCells / 4;   // 25% delle celle totali
-        int yellowCells = totalCells / 4; // 25% delle celle totali
+        int greenCells = totalCells / 8; // 25% delle celle totali
+        int redCells = totalCells / 8;   // 25% delle celle totali
+        int yellowCells = totalCells / 8; // 25% delle celle totali
         int whiteCells = totalCells - (greenCells + redCells + yellowCells); // Celle rimanenti
 
         Random random = new Random();
