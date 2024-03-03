@@ -3,11 +3,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// Definizione dell'interfaccia Strategy.
 interface Strategy{
+    // Le classi che implementano Strategy forniranno un'implementazione specifica di move.
     int[] move(int[] current_pos);
 }
 
+// Classe deputata alla gestione del k% dei casi per il movimento casuale della guardia e per gestire il movimento della guardia quando il ladro è su una casella gialla.
 class rand_move implements Strategy {
+
+    // IsExit evita che la guardia possa catturare il ladro sulla casella di uscita quando il ladro ha già vinto..
     private boolean isExit(Point[] exit, int x, int y) {
         for (Point p : exit) {
             if (p.x == x && p.y == y) {
@@ -17,6 +22,7 @@ class rand_move implements Strategy {
         return false;
     }
 
+    // Lo spostamento casuale viene calcolato per le 8 caselle adiacenti, la guardia si muoverà di una casella alla volta.
     private int[] rand_adjacent_8(int[] current_pos) {
         Room room = new Room();
         final int[][] DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}};
@@ -39,36 +45,42 @@ class rand_move implements Strategy {
         return current_pos;
     }
 
+    // Viene ritornato uno spostamento casuale valido della guardia.
     @Override
     public int[] move(int[] current_pos) {
         return rand_adjacent_8(current_pos);
     }
 }
 
+// Classe deputata al movimento speculare della guardia rispetto al movimento del ladro. Essa viene richiamata quando il ladro è su una casella verde.
 class green_move implements Strategy {
     private final int guardX;
     private final int guardY;
 
+    // Il costruttore passa le coordinate attuali della guardia.
     public green_move(int guardX, int guardY) {
         this.guardX = guardX;
         this.guardY = guardY;
     }
 
+    // Il metodo move sovrascrive la firma dell'interfaccia Strategy per gestire il movimento tramite green_move.
     @Override
     public int[] move(int[] thief_direction) {
         Room room = new Room();
+
+        // A seconda dello spostamento del ladro, vengono salvate le direzioni intraprese. Queste direzioni (Nord, Sud, Est, Ovest, Nord-Est ... etc) vengono sommate alle attuali coordinate della guardia.
         int x = thief_direction[0];
         int y = thief_direction[1];
         int[] guard_movement = new int[]{-x, -y};
 
-        // Controllo se il movimento porta la guardia fuori dalla matrice
+        // Controllo se il movimento porta la guardia fuori dalla matrice.
         if (guardX + guard_movement[0] < 0 || guardX + guard_movement[0] >= room.row ||
                 guardY + guard_movement[1] < 0 || guardY + guard_movement[1] >= room.column) {
             // Se il movimento porta la guardia fuori dalla matrice, mantienila ferma
             return new int[]{0, 0};
         }
 
-        // Controllo se il movimento porta la guardia sopra una casella nera
+        // Controllo se il movimento porta la guardia sopra una casella nera.
         if (room.matrix[guardX + guard_movement[0]][guardY + guard_movement[1]] == Color.BLACK) {
             // Se il movimento porta la guardia sopra una casella nera, mantienila ferma
             return new int[]{0, 0};
@@ -78,8 +90,7 @@ class green_move implements Strategy {
     }
 }
 
-
-// Classe deputata alla gestione dell'ANT COLONY OPTIMIZATION.
+// Classe deputata alla gestione dell'ANT COLONY OPTIMIZATION, essa si attiva quando è su una casella bianca %(100 - k) dei casi o è su una casella rossa.
 class aco_move implements Strategy {
     Room room = new Room(); // Viene istanziato un oggetto Room;
     private final double[][] PHEROMONES_MATRIX = new double[room.row][room.column]; // Matrice dei feromoni.
