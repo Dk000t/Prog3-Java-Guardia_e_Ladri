@@ -79,25 +79,16 @@ class green_move implements Strategy {
 }
 
 
-
-
-
+// Classe deputata alla gestione dell'ANT COLONY OPTIMIZATION.
 class aco_move implements Strategy {
     Room room = new Room(); // Viene istanziato un oggetto Room;
-    private final double PHEROMONE_DROP = 5.0; // Quantità di feromone rilasciato.
-    private final double PHEROMONE_INIT = 2.0; // Quantità di feromone inizializzato.
-    private final double EVAPORATION_RATE = 0.5; // Quantità di feromone evaporata.
-    private static final double ALPHA = 5.0; // Importanza dei feromoni.
-    private static final double BETA = 1.0;  // Importanza della visibilità.
     private final double[][] PHEROMONES_MATRIX = new double[room.row][room.column]; // Matrice dei feromoni.
-    private final int ANTS = (room.row * room.column)/2; // Quantità di formiche.
-    private final int ANTS_ITERATION = 20; // Numero di iterazioni che tutte le formiche dovranno fare.
+    private final int ANTS = room.row * room.column; // Quantità di formiche.
     Point[] ants = new Point[ANTS]; // Array di Point per salvare la posizione di tutte le formiche presenti.
     final int[][] ANTS_DIRECTIONS = {{-1,0},{1,0},{0,-1},{0,1},{1,1},{-1,-1},{1,-1},{-1,1}}; // Array bidimensionale utile per usare le posizioni come offset per lo spostamento nelle 8 caselle adiacenti.
     private Point thief; // Posizione del ladro.
     private Point guard; // Posizione della guardia.
     Random rand = new Random(); // Oggetto di tipo Random per la generazione di numeri pseudocasuali.
-    List<List<Point>> paths = new ArrayList<>(); // Lista di Liste di Point per salvare tutti i path percorsi da ogni formica.
     Point latest_seen = new Point(); // Ultima posizione in cui è stato avvistato/trovato il cibo.
     private Boolean isRed; // Flag utile a far variare il comportamento dell'ACO,
 
@@ -113,10 +104,7 @@ class aco_move implements Strategy {
 
     // Viene controllata la validità delle coordinate scelte, se esse si trovino nella matrice e non stiano sulle pareti della stanza.
     private boolean is_valid(Point point){
-        if (point.x >= 0 && point.x <= room.row && point.y >= 0 && point.y <= room.column && room.matrix[point.x][point.y] != Color.BLACK)
-            return true;
-        else
-            return false;
+        return point.x >= 0 && point.x <= room.row && point.y >= 0 && point.y <= room.column && room.matrix[point.x][point.y] != Color.BLACK;
     }
 
     // Se la posizione della formica è uguale alla posizione in cui è sto trovato il Cibo allora ritorna True.
@@ -124,8 +112,15 @@ class aco_move implements Strategy {
         return current_point.equals(latest_seen);
     }
 
+    /* Serve a gestire il comportamento dell'Aco a seconda di chi debba essere il target */
+    public void setBehavior(Boolean isRed) {
+        this.isRed = isRed;
+    }
+
     // Trovato il Cibo le formiche rilasciano sul suolo il feromone.
     private void drop_pheromones(Point ant_pos) {
+        // Quantità di feromone rilasciato.
+        double PHEROMONE_DROP = 5.0;
         PHEROMONES_MATRIX[ant_pos.x][ant_pos.y] += PHEROMONE_DROP;
     }
 
@@ -133,6 +128,7 @@ class aco_move implements Strategy {
     private void pheromones_evaporation(){
         for (int i = 0; i < room.row; i++)
             for (int j = 0; j < room.column; j++){
+                double EVAPORATION_RATE = 0.5;// Quantità di feromone evaporata.
                 PHEROMONES_MATRIX[i][j] *= (1 - EVAPORATION_RATE);
             }
     }
@@ -141,23 +137,34 @@ class aco_move implements Strategy {
     private void init_pheromones(){
         for (int i = 0; i < room.row; i++) {
             for (int j = 0; j < room.column; j++) {
+                double PHEROMONE_INIT = 2.0; // Quantità di feromone inizializzato.
                 PHEROMONES_MATRIX[i][j] = PHEROMONE_INIT;
             }
         }
     }
 
     // Le formiche vengono inizializzate alla colonia (Guardia).
-    private void init_ants(){
+    private void init_ants_random(){
+        for(int i = 0; i < ANTS; i++) {
+            ants[i] = new Point(rand.nextInt(room.row), room.column);
+        }
+    }
+
+    // Le formiche vengono inizializzate nella posizione della guardia dopo che il cibo è stato trovato per calcolare il percorso tra Colonia e Cibo.
+    private void init_ants_to_guard(){
         for(int i = 0; i < ANTS; i++) {
             ants[i] = new Point(guard.x, guard.y);
         }
     }
 
-    /* La guardia effettua decisioni dei suoi spoostamenti in base alle informazioni sul suolo.
+    /* La guardia effettua decisioni dei suoi spostamenti in base alle informazioni sul suolo.
     * Esso valuta il feromone presente e la visibilità.
     * La prossima mossa viene scelta calcolando uno score delle caselle adiacenti pesato facendo uso di
     * fattori quali ALPHA e BETA. La cella con il punteggio più alto è reputata la miglior mossa. */
     private Point guard_next_move() {
+        final double ALPHA = 5.0; // Importanza dei feromoni.
+        final double BETA = 1.0;  // Importanza della visibilità.
+
         Point[] adjacent_cells = new Point[]{
                 new Point(guard.x - 1, guard.y),   // Sinistra
                 new Point(guard.x + 1, guard.y),   // Destra
@@ -203,15 +210,14 @@ class aco_move implements Strategy {
         return new int[] {next_direction.x, next_direction.y};
     }
 
-    /* Le formiche vengono inizializzate nella posizione della guardia (Colonia).
-    * A seconda dello stato di isRed cambia il target (Cibo) a cui si applica l'Aco.
+    /* Le formiche vengono inizializzate in modo randomico nella stanza.
+    * A seconda dello stato di isRed cambia il target (Cibo) a cui si applica l'ACO.
     * Una volta impostato il target a cui applicare l'ACO le formiche si muovono
     * di una casella alla volta nelle 8 caselle adiacenti fino a quando non trovano il Target.
-    * La prima formica che trova il ladro rilascia feromone in quella posizione.
-    * A questo punto una volta trovato il "Cibo/Target" viene avviata l'Ant Colony Optimization
-    * ed infine viene fatto evaporare il feromone. */
+    * La prima formica che trova il ladro rilascia feromone in quella posizione e successivamente
+    * viene avviato l'Ant Colony Optimization. Calcolato il path viene fatto evaporare il feromone. */
     private void ants_move() {
-        init_ants();
+        init_ants_random();
         boolean targetFound = false;
         Point target = new Point();
 
@@ -246,19 +252,20 @@ class aco_move implements Strategy {
     }
 
     /* Trovato il cibo vengono inizializzate tutte le formiche alla colonia.
-    * Vengono fatte muovere tutte le formiche una ad una per le iterazioni prestabilite.
     * Ogni formica si muove di una casella alla volta nelle 8 caselle adiacenti, ogni spostamento
     * va a definire un punto del percorso che essa compie per arrivare al Target.
     * Una volta che la formica ha raggiunto il target tutti i punti percorsi vengono salvati.
-    * Calcolati tutti i path per tutte le formiche e per tutte le iterazioni, viene calcolato il percorso più breve,
+    * Viene calcolato il percorso più breve, tenendo conto del path calcolato dalla formica precedente.
     * Infine nelle posizioni che definiscono il percorso migliore viene depositato il feromone. */
     private void find_path() {
-        init_ants();
+        init_ants_to_guard();
+        int ANTS_ITERATION = 20;
+        List<Point> shortestPath = null;
 
         for (int j = 0; j < ANTS_ITERATION; j++) {
             for (int i = 0; i < ANTS; i++) {
                 Point current_point = new Point(ants[i]);
-                List<Point> path = new ArrayList<>(); // Percorso per la formica corrente
+                List<Point> path = new ArrayList<>();
                 while (!isTarget(current_point)) {
                     Point next_point;
                     do {
@@ -268,33 +275,16 @@ class aco_move implements Strategy {
                     path.add(next_point);
                     current_point = next_point; // Aggiorna la posizione corrente
                 }
-                paths.add(path); // Aggiungi il percorso della formica alla lista dei percorsi
+                if (shortestPath == null || path.size() < shortestPath.size()) {
+                    shortestPath = new ArrayList<>(path); // Se il nuovo percorso è più breve, aggiornalo
+                }
             }
         }
-        List<Point> shortest = findShortestPath(paths);
-        for (Point step : shortest) {
+
+        assert shortestPath != null;
+        for (Point step : shortestPath) {
             drop_pheromones(step);
         }
-    }
-
-    // Calcola il percorso piu breve di una Lista di Liste di Point. Ritorna il percorso con meno passi per arrivare al Target.
-    private List<Point> findShortestPath(List<List<Point>> paths) {
-        List<Point> shortest = null;
-        int minLength = Integer.MAX_VALUE;
-
-        for (List<Point> path : paths) {
-            if (path.size() < minLength) {
-                minLength = path.size();
-                shortest = path;
-            }
-        }
-
-        return shortest;
-    }
-
-    /* Serve a gestire il comportamento dell'Aco a seconda di chi debba essere il target */
-    public void setBehavior(Boolean isRed) {
-        this.isRed = isRed;
     }
 
 }

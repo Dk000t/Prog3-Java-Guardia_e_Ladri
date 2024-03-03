@@ -98,7 +98,7 @@ public class Game extends JFrame {
         }
 
         if (thiefMoved) {
-            points += 10; // Incrementa i punti di 10
+            points += 1; // Incrementa i punti di 10
 
             if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.GREEN) {
                 isOnGreen = true;
