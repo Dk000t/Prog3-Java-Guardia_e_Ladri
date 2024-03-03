@@ -68,7 +68,7 @@ class green_move implements Strategy {
     public int[] move(int[] thief_direction) {
         Room room = new Room();
 
-        // A seconda dello spostamento del ladro, vengono salvate le direzioni intraprese. Queste direzioni (Nord, Sud, Est, Ovest, Nord-Est ... etc) vengono sommate alle attuali coordinate della guardia.
+        // A seconda dello spostamento del ladro, vengono salvate le direzioni intraprese. Queste direzioni (Nord, Sud, Est, Ovest, Nord-Est ... etc) vengono negate e  sommate alle attuali coordinate della guardia.
         int x = thief_direction[0];
         int y = thief_direction[1];
         int[] guard_movement = new int[]{-x, -y};
