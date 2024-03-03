@@ -31,6 +31,8 @@ public class Game extends JFrame {
     private final Timer greenTimer;
     private final Timer yellowTimer;
     Random rand = new Random();
+    private Command exitCommand;
+
 
 
     public Game(Room room) {
@@ -60,7 +62,6 @@ public class Game extends JFrame {
         gamePanel.setFocusable(true);
         setVisible(true);
         setVisible(true);
-        setAlwaysOnTop(true);
 
         greenTimer = new Timer(10000, (e) -> isOnGreen = false);
         greenTimer.setRepeats(false);
@@ -95,6 +96,13 @@ public class Game extends JFrame {
             thief_coordinate[1]++; //EST
             thief_direction = new int[]{0, 1};
             thiefMoved = true;
+        }
+
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            if (exitCommand != null) {
+                exitCommand.execute();
+            }
+            return;
         }
 
         if (thiefMoved) {
@@ -186,6 +194,10 @@ public class Game extends JFrame {
 
             repaint();
         }
+    }
+
+    public void setExitCommand(Command exitCommand) {
+        this.exitCommand = exitCommand;
     }
 
     public void addObserver(Observer observer) {

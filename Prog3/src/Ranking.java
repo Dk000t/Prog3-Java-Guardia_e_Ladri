@@ -3,12 +3,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 
+// Classe che gestisce il ranking dei giocatori
 public class Ranking {
     private static String name, surname;
     static File file = new File("Ranking.txt");
 
+    // Metodo per leggere e visualizzare il ranking
     public void RankingRead() {
         try {
             if (!file.exists()) {
@@ -42,15 +44,37 @@ public class Ranking {
         }
     }
 
+    // Metodo per impostare le informazioni del giocatore
+    public void setPlayer_info() {
+        int playGame = JOptionPane.showConfirmDialog(null, "Vuoi giocare a Guardia e Ladro?", "Game", JOptionPane.YES_NO_OPTION);
 
-    public void setPlayer_info(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\nInserisci il tuo nome:");
-        name = scanner.nextLine();
-        System.out.println("Inserisci il tuo cognome:");
-        surname = scanner.nextLine();
+        if (playGame == JOptionPane.YES_OPTION) {
+            do {
+                name = JOptionPane.showInputDialog("Inserisci il tuo nome:");
+
+                // Se l'utente ha chiuso la finestra o premuto "Cancel" durante l'inserimento del nome
+                if (name == null) {
+                    JOptionPane.showMessageDialog(null, "GL HF!");
+                    System.exit(0);
+                }
+            } while (name.trim().isEmpty());  // Continua a chiedere se il campo è vuoto o contiene solo spazi
+
+            do {
+                surname = JOptionPane.showInputDialog("Inserisci il tuo cognome:");
+
+                // Se l'utente ha chiuso la finestra o premuto "Cancel" durante l'inserimento del cognome
+                if (surname == null) {
+                    JOptionPane.showMessageDialog(null, "GL HF!");
+                    System.exit(0);
+                }
+            } while (surname.trim().isEmpty());  // Continua a chiedere se il campo è vuoto o contiene solo spazi
+        } else {
+            JOptionPane.showMessageDialog(null, "GL HF!");
+            System.exit(0); // Chiudi l'applicazione se l'utente ha premuto "No" o chiuso la finestra
+        }
     }
 
+    // Metodo per salvare il punteggio del giocatore e aggiornare il ranking
     public void RankingSave(int points) {
         try {
             FileWriter fileWriter = new FileWriter("Ranking.txt", true); // "true" indica di appendere al file esistente
