@@ -11,30 +11,31 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.Timer;
 
+// La classe Game estende JFrame e gestisce la logica di gioco
 public class Game extends JFrame {
 
     private final Room room;
-    private static int[] thief_coordinate;
-    private static int[] guard_coordinate;
-    private static int[] thief_direction;
-    private boolean victoryAchieved = false;
+    private static int[] thief_coordinate; // Coordinate del ladro.
+    private static int[] guard_coordinate; // Coordinate della guardia.
+    private static int[] thief_direction; // Direzione intrapresa dal ladro.
+    private boolean victoryAchieved = false; // Flag per la vittoria.
     private final List<Observer> victoryObservers = new ArrayList<>();
-    private boolean gameOver = false;
-    static int points;
-    VictoryDisplay victory = new VictoryDisplay();
-    DefeatDisplay defeat = new DefeatDisplay();
+    private boolean gameOver = false; // Flag per la sconfitta.
+    static int points; // Punteggio relativo ai passi effettuati.
+    VictoryDisplay victory = new VictoryDisplay(); // Observer per la gestione della vittoria.
+    DefeatDisplay defeat = new DefeatDisplay(); // Observer per la gestione della sconfitta.
     Ranking ranking = new Ranking();
-    private boolean isOnGreen = false;
-    private boolean isOnYellow = false;
-    private boolean isOnRed = false;
-    private boolean isOnWhite = false;
-    private final Timer greenTimer;
-    private final Timer yellowTimer;
+    private boolean isOnGreen = false; // Flag per caselle verdi.
+    private boolean isOnYellow = false; // Flag per caselle gialle.
+    private boolean isOnRed = false; // Flag per caselle rosse.
+    private boolean isOnWhite = false; // Flag per caselle bianche.
+    private final Timer greenTimer; // Timer per le caselle verdi.
+    private final Timer yellowTimer; // Timer per le caselle gialle.
     Random rand = new Random();
     private Command exitCommand;
 
 
-
+    // Costruttore della classe Game
     public Game(Room room) {
         thief_direction = new int[2];
         this.room = room;
@@ -63,15 +64,18 @@ public class Game extends JFrame {
         setVisible(true);
         setVisible(true);
 
+        // Timer di 10 secondi per gestire il movimento sulle caselle verdi.
         greenTimer = new Timer(10000, (e) -> isOnGreen = false);
         greenTimer.setRepeats(false);
         greenTimer.start();
 
+        //Timer di 10 secondi per gestire il movimento sulle caselle gialle.
         yellowTimer = new Timer(10000,(e) -> isOnYellow = false);
         yellowTimer.setRepeats(false);
         yellowTimer.start();
     }
 
+    // Gestisce la pressione del tasto
     private void handleKeyPress(KeyEvent e) {
         if (victoryAchieved || gameOver) {
             return;
@@ -80,6 +84,7 @@ public class Game extends JFrame {
         int keyCode = e.getKeyCode();
         boolean thiefMoved = false;
 
+        // Movimento del ladro in base al tasto premuto
         if (keyCode == KeyEvent.VK_UP && thief_coordinate[0] > 0 && room.matrix[thief_coordinate[0] - 1][thief_coordinate[1]] != Color.BLACK) {
             thief_coordinate[0]--; //NORD
             thief_direction = new int[]{-1, 0};
@@ -98,6 +103,7 @@ public class Game extends JFrame {
             thiefMoved = true;
         }
 
+        // Gestisce l'uscita dal gioco se premuto ESC
         if (keyCode == KeyEvent.VK_ESCAPE) {
             if (exitCommand != null) {
                 exitCommand.execute();
@@ -105,9 +111,11 @@ public class Game extends JFrame {
             return;
         }
 
+        // Aggiorna la posizione del ladro
         if (thiefMoved) {
             points += 1; // Incrementa i punti di 10
 
+            // Verifica il tipo di cella su cui si trova il ladro
             if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.GREEN) {
                 isOnGreen = true;
                 isOnYellow = false;
@@ -141,6 +149,7 @@ public class Game extends JFrame {
                 yellowTimer.stop();
             }
 
+            // Aggiorna la posizione della guardia in base al tipo di cella su cui si trova il ladro
             if (isOnYellow) {
                 rand_move rand_move = new rand_move();
                 int[] newGuardCoordinate = rand_move.move(guard_coordinate);
@@ -183,6 +192,7 @@ public class Game extends JFrame {
                 }
             }
 
+            // Verifica se il ladro ha raggiunto una delle uscite
             for (Point exitPoint : room.exit) {
                 if (exitPoint.x == thief_coordinate[0] && exitPoint.y == thief_coordinate[1]) {
                     victoryAchieved = true;
@@ -196,17 +206,20 @@ public class Game extends JFrame {
         }
     }
 
+    // Imposta il comando di uscita
     public void setExitCommand(Command exitCommand) {
         this.exitCommand = exitCommand;
     }
 
+    // Aggiunge un osservatore alla lista
     public void addObserver(Observer observer) {
         victoryObservers.add(observer);
     }
 
+    // Notifica tutti gli osservatori della vittoria
     private void notifyVictoryObservers() {
         for (Observer observer : victoryObservers) {
-            observer.notify(getGraphics()); // Passa il Graphics del pannello di gioco
+            observer.notify(getGraphics());
         }
     }
 
@@ -218,6 +231,7 @@ public class Game extends JFrame {
             drawThief(g);
             drawGuard(g);
 
+            // Visualizza il messaggio di vittoria o sconfitta
             if (victoryAchieved) {
                 victory.notify(g);
                 ranking.RankingRead();
@@ -228,6 +242,7 @@ public class Game extends JFrame {
             }
         }
 
+        // Disegna la matrice della stanza
         private void drawMatrix(Graphics g) {
             int cellSize = 21;
 
@@ -241,12 +256,14 @@ public class Game extends JFrame {
             }
         }
 
+        // Disegna il ladro nella stanza
         private void drawThief(Graphics g) {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
             g.drawString("\uD83C\uDFC3", thief_coordinate[1] * cellSize, (thief_coordinate[0] + 1) * cellSize);
         }
 
+        // Disegna la guardia nella stanza
         private void drawGuard(Graphics g) {
             int cellSize = 21;
             g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, cellSize));
