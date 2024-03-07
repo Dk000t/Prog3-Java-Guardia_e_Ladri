@@ -10,6 +10,7 @@ class ExitCommand implements Command {
     public void execute() {
         // Visualizza una finestra di dialogo per confermare l'uscita dal gioco
         int result = JOptionPane.showConfirmDialog(null, "Vuoi veramente uscire dal gioco?", "Exit", JOptionPane.YES_NO_OPTION);
+        // Viene usato un intero per salvare la scelta fatta.
 
         //Premendo "si", l'utente sceglie di uscire
         if (result == JOptionPane.YES_OPTION) {

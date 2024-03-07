@@ -253,7 +253,6 @@ class aco_move implements Strategy {
                 if (ants[i].equals(target)) {
                     targetFound = true; // Imposta il flag per indicare che il ladro è stato trovato
                     latest_seen.setLocation(ants[i]);
-                    drop_pheromones(ants[i]);
                     break; // Esci dal ciclo for quando il ladro è stato trovato
                 }
             }

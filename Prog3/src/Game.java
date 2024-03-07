@@ -50,7 +50,7 @@ public class Game extends JFrame {
         int height = room.row * hSize;
         setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); // Accentra la finestra.
         setResizable(false);
         GamePanel gamePanel = new GamePanel();
         add(gamePanel);
@@ -61,7 +61,6 @@ public class Game extends JFrame {
             }
         });
         gamePanel.setFocusable(true);
-        setVisible(true);
         setVisible(true);
 
         // Timer di 10 secondi per gestire il movimento sulle caselle verdi.
@@ -124,6 +123,7 @@ public class Game extends JFrame {
                 greenTimer.restart();
                 yellowTimer.stop();
             }
+
             else if (room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.YELLOW) {
                 isOnYellow = true;
                 isOnGreen = false;
@@ -132,21 +132,14 @@ public class Game extends JFrame {
                 yellowTimer.restart();
                 greenTimer.stop();
             }
-            else if(room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.RED) {
+
+            else if(room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.RED && !isOnGreen  && !isOnYellow) {
                 isOnRed = true;
-                isOnGreen = false;
-                isOnYellow = false;
                 isOnWhite = false;
-                greenTimer.stop();
-                yellowTimer.stop();
             }
-            else if(room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.WHITE) {
+            else if(room.matrix[thief_coordinate[0]][thief_coordinate[1]] == Color.WHITE && !isOnGreen && !isOnYellow) {
                 isOnWhite = true;
-                isOnGreen = false;
-                isOnYellow = false;
                 isOnRed = false;
-                greenTimer.stop();
-                yellowTimer.stop();
             }
 
             // Aggiorna la posizione della guardia in base al tipo di cella su cui si trova il ladro
