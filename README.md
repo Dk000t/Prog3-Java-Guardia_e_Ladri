@@ -28,3 +28,7 @@ Scrivere un programma per la gestione del gioco che permette di visualizzare, ad
 ![gif4](https://github.com/user-attachments/assets/b768e635-782c-43ff-8698-5b3b7977d7c2)
 <br><br>
 ![gif5](https://github.com/user-attachments/assets/0a35ba3b-3ac0-4afa-ad66-62ba6a128ab8)
+<br><br>
+Devs:
+- [Ssdj3nt](https://github.com/Ssdj3nt)
+- [MrHide](https://github.com/Atymia)
