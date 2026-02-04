@@ -30,5 +30,5 @@ Scrivere un programma per la gestione del gioco che permette di visualizzare, ad
 ![gif5](https://github.com/user-attachments/assets/0a35ba3b-3ac0-4afa-ad66-62ba6a128ab8)
 <br><br>
 Devs:
-- [Ssdj3nt](https://github.com/Ssdj3nt)
+- [Ssdj3nt](https://github.com/Dk000t)
 - [MrHide](https://github.com/Atymia)
